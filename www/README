@@ -1,0 +1,31 @@
+1. index.html: HTML estático que muestra un título y párrafo.
+
+　　　curl -v http://localhost:8080/index.html
+
+2. style.css: Archivo CSS de estilo.
+
+　　　curl -v http://localhost:8080/style.css
+
+3. script.js: Archivo JavaScript que imprime un mensaje en consola.
+
+　　　curl -v http://localhost:8080/script.js
+
+4. imagen.png: Archivo binario de prueba (imagen).
+
+　　　curl -v http://localhost:8080/imagen.png --output test.png
+
+5. prueba.pdf: PDF de prueba con texto simple.
+
+　　　curl -v http://localhost:8080/prueba.pdf --output test.pdf
+
+6. carpeta/index.html: Index dentro de subcarpeta.
+
+　　　curl -v http://localhost:8080/carpeta/
+
+7. cgi-bin/prueba.py: Script CGI que imprime contenido HTML dinámico.
+
+　　　curl -v http://localhost:8080/cgi-bin/prueba.py
+
+8. Archivo inexistente: Para probar errores 404.
+
+　　　curl -v http://localhost:8080/noexiste.html
