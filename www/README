@@ -1,4 +1,4 @@
-TEST PARA NGINX
+# **TEST PARA NGINX**
 
 1. index.html: HTML estático que muestra un título y párrafo.
 
@@ -32,7 +32,7 @@ TEST PARA NGINX
 
 　　　curl -v http://localhost:8080/noexiste.html
 
-FLUJO DEL PROYECTO
+# **FLUJO DEL PROYECTO**
 
 [SOCKET]
    ↓
@@ -50,27 +50,27 @@ writeBuffer
    ↓
 send()
 
-ESTRUCTURAS COMUNES
+# **ESTRUCTURAS COMUNES**
 
-(CLIENTE)
-class Request
-{
-public:
-    std::string method;
-    std::string path;
-    std::string version;
-
-    std::map<std::string, std::string> headers;
-    std::string body;
-};
-
-(SERVIDOR)
-class Response
-{
-public:
-    int statusCode;
-    std::string body;
-    std::map<std::string, std::string> headers;
-
-    std::string toString() const;
-};
+   **CLIENTE**
+   class Request
+   {
+   public:
+       std::string method;
+       std::string path;
+       std::string version;
+   
+       std::map<std::string, std::string> headers;
+       std::string body;
+   };
+   
+   **SERVIDOR**
+   class Response
+   {
+   public:
+       int statusCode;
+       std::string body;
+       std::map<std::string, std::string> headers;
+   
+       std::string toString() const;
+   };
