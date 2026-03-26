@@ -74,3 +74,30 @@ send()
    
        std::string toString() const;
    };
+
+🧠 División óptima para 2 personas
+👩‍💻 Persona A → 🔌 Networking + Clientes
+
+👉 Se encarga del “motor” del servidor
+
+Responsabilidades:
+socket, bind, listen, accept
+poll() / select()
+gestionar múltiples clientes
+buffers de lectura/escritura por cliente
+saber cuándo hay datos listos
+
+👉 Esta persona controla el flujo tipo:
+
+[cliente conectado] → [recibo datos] → [se los paso al parser]
+👩‍💻 Persona B → 🧠 Parsing + Respuesta
+
+👉 Se encarga del “cerebro”
+
+Responsabilidades:
+parsear HTTP (request)
+construir estructura Request
+generar Response
+códigos HTTP (200, 404, 500…)
+servir archivos
+lógica básica del servidor
