@@ -101,3 +101,8 @@ generar Response
 códigos HTTP (200, 404, 500…)
 servir archivos
 lógica básica del servidor
+
+# **RESOURCES**
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides?utm_source=chatgpt.com
+https://datatracker.ietf.org/doc/html/rfc7230?utm_source=chatgpt.com
