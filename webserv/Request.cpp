@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:21:28 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/03/30 21:44:32 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/03/30 22:02:11 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void Request::parseRequest(const std::string& raw)
     version = raw.substr(pos2 + 1, pos3 - (pos2 + 1));
     std::cout << version << std::endl;
     pos4 = raw.find("\r\n\r\n", pos3 + 1);
-    size_t start = pos3 + 1;
+    size_t start = pos3 + 2;
     while (start < pos4)
     {
         size_t end = raw.find("\r\n", start);
@@ -61,6 +61,8 @@ void Request::parseRequest(const std::string& raw)
         {
             std::string key = line.substr(0, split);
             std::string value = line.substr(split + 1);
+            while (!key.empty() && (key[0] == ' ' || key[0] == '\r' || key[0] == '\t'))
+                key.erase(0, 1);
             while (!value.empty() && value[0] == ' ')
                 value.erase(0, 1);
             headers[key] = value;
@@ -68,8 +70,19 @@ void Request::parseRequest(const std::string& raw)
         }
         start = end + 2;
     }
+    if (pos4 == std::string::npos)
+        body = "";
+    else if (pos4 + 4 < raw.size())
+        body = raw.substr(pos4 + 4);
+    else
+        body = "";
+    std::cout << body << std::endl;
 }
 
-/* GET /index.html HTTP/1.1\r\n
-Host: localhost\r\n
-\r\n */
+/* Añadir el campo de error y cambiar parseRequest para que retorne o setee ese estado
+Validar cada find antes de usarlo
+Limpiar trailing whitespace en valores de header
+Poner un límite en longitud de request line y número de headers
+Luego ya lo que dices tú — verificar method válido, path válido, versión, headers obligatorios como Host, etc.
+
+ */
