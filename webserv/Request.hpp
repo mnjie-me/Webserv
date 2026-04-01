@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/03/31 19:35:50 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/01 13:33:31 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@
 
 class Request
 {
-    public:
-    
+    private:
+
         static const size_t                 MAX_REQUEST_SIZE = 8192;
-    
+
         int                                 errorCode;
         bool                                isValid;
         std::string                         method;
@@ -30,14 +30,24 @@ class Request
         std::map<std::string, std::string>  headers;
         std::string                         body;
         
+        void validateRequestLine();
+        void validateHeaders();
+        void setError(int code);
+        
+        public:
+        
+        
         Request();
         Request(const Request& other);
         Request& operator=(const Request& other);
         ~Request();
-
+        
         void parseRequest(const std::string& raw);
-        void setError(int code);
         int  getError();
-        void validateRequestLine();
-        void validateHeaders();
+        bool getIsValid();
+        std::string getMethod();
+        std::string getPath();
+        std::string getVersion();
+        std::map<std::string, std::string> getHeaders();
+        std::string getBody();
 };
