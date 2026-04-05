@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/05 13:39:19 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/05 21:59:30 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class Request
         Request& operator=(const Request& other);
         ~Request();
         
-        void parseRequest(const std::string& raw);
+        void parseRequest(const std::string& raw, const ServerConfig& config);
         int  getError();
         bool getIsValid();
         std::string getMethod();

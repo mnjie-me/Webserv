@@ -1,30 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/30 20:50:08 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/05 22:00:10 by mari-cruz        ###   ########.fr       */
+/*   Created: 2026/04/05 21:35:29 by mari-cruz         #+#    #+#             */
+/*   Updated: 2026/04/05 21:46:16 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Request.hpp"
-#include "ServerConfig.hpp"
+#pragma once
 
-int main()
+#include "LocationConfig.hpp"
+
+class ServerConfig
 {
-    Request input;
-    ServerConfig config;
+    public:
 
-    input.parseRequest("GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n", config);
-    if (input.getError() != 0)
-    {
-        std::cout << "Error: " << input.getError() << std::endl;
-    }
-}
-
-
-// Test extra characters on input
-// echo -e | ./Webserv | cat -A
+        int                                     port;
+        std::string                             serverName;
+        size_t                                  clientMaxBodySize;
+        std::map<int, std::string>              errorPages;
+        std::map<std::string, LocationConfig>   locations;
+};

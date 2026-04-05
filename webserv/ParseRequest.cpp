@@ -6,13 +6,14 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:22:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/05 13:38:42 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/05 21:59:06 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include "ServerConfig.hpp"
 
-void Request::parseRequest(const std::string& raw)
+void Request::parseRequest(const std::string& raw, const ServerConfig& config)
 {
     size_t pos1;
     size_t pos2;
@@ -108,7 +109,7 @@ void Request::parseRequest(const std::string& raw)
     validateHeaders();
     if (!isValid)
         return ;
-    validateBody();
+    validateBody(config.clientMaxBodySize);
 }
 
 void Request::validateRequestLine()
