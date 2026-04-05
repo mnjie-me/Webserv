@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/01 13:33:31 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/05 13:39:19 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class Request
         
         void validateRequestLine();
         void validateHeaders();
+        void validateBody(size_t clientMaxBodySize);
         void setError(int code);
         
         public:

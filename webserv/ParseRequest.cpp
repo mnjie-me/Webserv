@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:22:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/01 13:27:34 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/05 13:38:42 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,10 @@ void Request::parseRequest(const std::string& raw)
     validateRequestLine();
     if (!isValid)
         return ;
-    validateHeaders(); 
+    validateHeaders();
+    if (!isValid)
+        return ;
+    validateBody();
 }
 
 void Request::validateRequestLine()
@@ -149,4 +152,13 @@ void Request::validateHeaders()
             return ;
         }
     } 
+}
+
+void Request::validateBody(size_t clientMaxBodySize)
+{
+    if (body.size() > clientMaxBodySize)
+    {
+        setError(413);
+        return ;
+    }
 }
