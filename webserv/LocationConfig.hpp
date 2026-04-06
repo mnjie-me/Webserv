@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:36:49 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/05 21:43:58 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/06 13:10:38 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 class LocationConfig
 {
@@ -31,4 +34,6 @@ class LocationConfig
         LocationConfig(const LocationConfig& other);
         LocationConfig& operator=(const LocationConfig& other);
         ~LocationConfig();
+
+        LocationConfig& parseLocation(LocationConfig& config, std::ifstream& file);
 };

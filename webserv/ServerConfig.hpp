@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:35:29 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/05 21:46:16 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/06 13:37:48 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,13 @@ class ServerConfig
         size_t                                  clientMaxBodySize;
         std::map<int, std::string>              errorPages;
         std::map<std::string, LocationConfig>   locations;
+
+        ServerConfig();
+        ServerConfig(const ServerConfig& other);
+        ServerConfig& operator=(const ServerConfig& other);
+        ~ServerConfig();
+
+        void parseConfigFile(char *av);
+        std::string trim(const std::string& line);
+        void parseServer(ServerConfig& config, std::ifstream& file);
 };
