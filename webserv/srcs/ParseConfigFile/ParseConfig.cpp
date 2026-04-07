@@ -6,11 +6,12 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/06 14:21:59 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/07 13:56:22 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerConfig.hpp"
+#include "LocationConfig.hpp"
 
 void ServerConfig::parseConfigFile(char *av)
 {
@@ -107,20 +108,41 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             }
             config.errorPages[(int)errorNum] = val;
         }
+        else if (trimmed.substr(0, 20) == "client_max_body_size")
+        {
+            std::string value = trim(trimmed.substr(20));
+            if (value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            if (value.empty())
+            {
+                std::cerr << "Error: empty client max body size" << std::endl;
+                return ;
+            }
+            size_t multiplier = 1;
+            char last = value[value.size() - 1];
+            if (last == 'k' || last == 'K')
+                multiplier = 1024;
+            else if (last == 'm' || last == 'M')
+                multiplier = 1024 * 1024;
+            else if (last == 'g' || last == 'G')
+                multiplier = 1024 * 1024 * 1024;
+            config.clientMaxBodySize = std::atoi(value.c_str()) * multiplier;
+        }
+        else
+        {
+            std::string path = trim(trimmed.substr(8));
+            if (!path.empty() && path[path.size() - 1] == '{')
+                path = trim(path.substr(0, path.size() - 1));
+            LocationConfig loc;
+            loc.parseLocation(loc, file);
+            config.locations[path] = loc;
+        }
     }
 }
 
 LocationConfig& LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
 {
-    
-}
-
-std::string ServerConfig::trim(const std::string& line)
-{
-    size_t start = line.find_first_not_of(" \t\n\r\f\v");
-    if (start == std::string::npos)
-        return ("");
-    size_t end = line.find_last_not_of(" \t\n\r\f\v");
-    std::string trimmed = line.substr(start, end - start + 1);
-    return (trimmed);
+    (void)config;
+    (void)file;
+    return (config);
 }

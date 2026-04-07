@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/05 21:59:30 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/07 13:11:32 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <iostream>
 #include <map>
 #include <cstdlib>
+
+class ServerConfig;
 
 class Request
 {

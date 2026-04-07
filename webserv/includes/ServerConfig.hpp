@@ -6,12 +6,13 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:35:29 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/06 13:37:48 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/07 13:28:25 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <cstdlib>
 #include "LocationConfig.hpp"
 
 class ServerConfig
