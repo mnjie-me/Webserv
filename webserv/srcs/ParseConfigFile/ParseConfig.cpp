@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/07 13:56:22 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 14:18:31 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             size_t pos = value.find(' ');
             if (pos == std::string::npos)
             {
-                std::cerr << "Error: error_page invalid format" << std::endl;
+                std::cerr << "Error: error_page has invalid format" << std::endl;
                 return ;
             }
             std::string key = value.substr(0, pos);
@@ -128,7 +128,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 multiplier = 1024 * 1024 * 1024;
             config.clientMaxBodySize = std::atoi(value.c_str()) * multiplier;
         }
-        else
+        else if (trimmed.substr(0, 8) == "location")
         {
             std::string path = trim(trimmed.substr(8));
             if (!path.empty() && path[path.size() - 1] == '{')
@@ -136,13 +136,113 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             LocationConfig loc;
             loc.parseLocation(loc, file);
             config.locations[path] = loc;
+            /* std::map<std::string, LocationConfig>::iterator it;
+
+            for (it = locations.begin(); it != locations.end(); ++it)
+            {
+                std::cout << "Location path: " << it->first <<  " " << it->second << std::endl;
+            } */
+        }
+        else 
+        {
+            std::cerr << "Error: unexpected token " << trimmed << std::endl;
+            return ;
         }
     }
 }
 
-LocationConfig& LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
+void LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
 {
+    std::string line;
     (void)config;
-    (void)file;
-    return (config);
+    //std::cout << "LOCATION" << std::endl;
+    while (getline(file, line))
+    {
+        std::string trimmed = trim(line);
+        if (trimmed.empty() || trimmed[0] == '#')
+            continue ;
+        if (trimmed == "}" || trimmed == "};")
+            return ;
+        //std::cout << line << std::endl;
+        if (trimmed.substr(0, 4) == "root")
+        {
+            std::string value = trim(trimmed.substr(4));
+            if (!value.empty() && value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            config.root = value;
+            //std::cout << value << std::endl;
+        }
+        else if (trimmed.substr(0, 7) == "methods")
+        {
+            std::string value = trim(trimmed.substr(7));
+            if (!value.empty() && value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            size_t start = 0;
+            while (start <value.size())
+            {
+                size_t pos = value.find(' ', start);
+                if (pos == std::string::npos)
+                {
+                    config.methods.push_back(value.substr(start));
+                    //std::cout << config.methods.back() << std::endl;
+                    break ;
+                }
+                config.methods.push_back(value.substr(start, pos - start));
+                //std::cout << config.methods.back() << std::endl;
+                start = pos + 1;
+            }
+        }
+        else if (trimmed.substr(0, 5) == "index")
+        {
+            std::string value = trim(trimmed.substr(5));
+            if (!value.empty() && value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            config.index = value;
+            //std::cout << value << std::endl;
+        }
+        else if (trimmed.substr(0, 9) == "autoindex")
+        {
+            std::string value = trim(trimmed.substr(9));
+            if (!value.empty() && value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            if (value == "off")
+                config.autoindex = false;
+            else
+                config.autoindex = true;
+        }
+        else if (trimmed.substr(0, 12) == "upload_store")
+        {
+            std::string value = trim(trimmed.substr(12));
+            if (!value.empty() && value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            config.uploadStore = value;
+            //std::cout << value << std::endl;
+        }
+        else if (trimmed.substr(0, 6) == "return")
+        {
+            std::string value = trim(trimmed.substr(6));
+            //std::cout << "value: [" << value << "]" << std::endl;
+            size_t pos = value.find(' ');
+            if (pos == std::string::npos)
+            {
+                std::cerr << "Error: return has invalid format" << std::endl;
+                return ;
+            }
+            //std::cout << "pos: " << pos << std::endl;
+            std::string error = value.substr(0, pos);
+            std::string url = trim(value.substr(pos));
+            if (!url.empty() && url[url.size() - 1] == ';')
+                url.erase(url.size() - 1);
+            config.redirect = std::make_pair(std::atoi(error.c_str()), url);
+            //std::cout << error << " " << url << std::endl;
+        }
+        else if (trimmed.substr(0, 8) == "cgi_pass")
+        {
+            std::string value = trim(trimmed.substr(8));
+            if (!value.empty() && value[value.size() - 1] == ';')
+                value.erase(value.size() - 1);
+            config.cgiPass = value;
+            //std::cout << value << std::endl;
+        }
+    }
 }

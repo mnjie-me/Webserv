@@ -6,12 +6,13 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:36:49 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/06 13:10:38 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 14:01:46 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "UtilsServer.hpp"
 #include <iostream>
 #include <map>
 #include <vector>
@@ -27,7 +28,7 @@ class LocationConfig
         std::string                 index;
         bool                        autoindex;
         std::string                 uploadStore;
-        std::string                 redirect;
+        std::pair<int, std::string> redirect;
         std::string                 cgiPass;
 
         LocationConfig();
@@ -35,5 +36,5 @@ class LocationConfig
         LocationConfig& operator=(const LocationConfig& other);
         ~LocationConfig();
 
-        LocationConfig& parseLocation(LocationConfig& config, std::ifstream& file);
+        void parseLocation(LocationConfig& config, std::ifstream& file);
 };

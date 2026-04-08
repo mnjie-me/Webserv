@@ -6,12 +6,13 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:20:01 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/07 13:14:46 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 12:45:14 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "ServerConfig.hpp"
+#include "UtilsServer.hpp"
 
 void Request::setError(int code)
 {
@@ -49,7 +50,7 @@ std::string Request::getBody()
     return (body);
 }
 
-std::string ServerConfig::trim(const std::string& line)
+std::string trim(const std::string& line)
 {
     size_t start = line.find_first_not_of(" \t\n\r\f\v");
     if (start == std::string::npos)
