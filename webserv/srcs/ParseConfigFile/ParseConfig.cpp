@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 14:55:48 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 19:03:54 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,19 @@ void ServerConfig::parseConfigFile(char *av)
         if (trimmed.substr(0, 6) == "server" && (trimmed.size() == 6
             || trimmed[6] == ' ' || trimmed[6] == '{'))
         {
+            if (trimmed.find('{') == std::string::npos && !expectOpenBrace(file))
+            {
+                std::cerr << "Error: server block not opened" << std::endl;
+                return ;
+            }
             ServerConfig config;
             if (!parseServer(config, file))
                 return ;
+            if (config.locations.empty())
+            {
+                std::cerr << "Error: server has no locations" << std::endl;
+                return ;
+            }
             servers.push_back(config);
         }
         else if (trimmed == "}" || trimmed == "};")
@@ -46,6 +56,11 @@ void ServerConfig::parseConfigFile(char *av)
         }
     }
     file.close();
+    if (servers.empty())
+    {
+        std::cerr << "Error: no server configured" << std::endl;
+        return ;
+    }
 }
 
 bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
@@ -131,15 +146,16 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 multiplier = 1024 * 1024 * 1024;
             else if (!std::isdigit(last))
             {
-                std::cerr << "Error: invalid client_max_body_size" << std::endl;
+                std::cerr << "Error: invalid client max body size" << std::endl;
                 return (false);
             }
             char *end;
             long size = strtol(value.c_str(), &end, 10);
-            if (*end != '\0' && *end != 'k' && *end != 'K' 
+            if ((*end != '\0' && *end != 'k' && *end != 'K' 
                 && *end != 'm' && *end != 'M' && *end != 'g' && *end != 'G')
+                || size < 0)
             {
-                std::cerr << "Error: invalid client_max_body_size" << std::endl;
+                std::cerr << "Error: invalid client max body size" << std::endl;
                 return (false);
             }
             config.clientMaxBodySize = (size_t)size * multiplier;
@@ -149,12 +165,28 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             std::string path = trim(trimmed.substr(8));
             if (!path.empty() && path[path.size() - 1] == '{')
                 path = trim(path.substr(0, path.size() - 1));
+            else if (!expectOpenBrace(file))
+            {
+                std::cerr << "Error: location block not opened" << std::endl;
+                return (false);
+            }
+            if (path.empty())
+            {
+                std::cerr << "Error: location path is empty" << std::endl;
+                return (false);
+            }
             LocationConfig loc;
             if (!loc.parseLocation(loc, file))
                 return (false);
             config.locations[path] = loc;
         }
+        else
+        {
+            std::cerr << "Error: unexpected token " << trimmed << std::endl;
+            return (false); 
+        }
     }
+    std::cerr << "Error: location block not closed" << std::endl;
     return (false);
 }
 
@@ -213,8 +245,12 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
                 value.erase(value.size() - 1);
             if (value == "off")
                 config.autoindex = false;
-            else
+            else if (value == "on")
                 config.autoindex = true;
+            else
+            {
+                std::cerr << "Error: invalid autoindex" << std::endl;
+            }
         }
         else if (trimmed.substr(0, 12) == "upload_store")
         {
@@ -231,7 +267,7 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             size_t pos = value.find(' ');
             if (pos == std::string::npos)
             {
-                std::cerr << "Error: return has invalid format" << std::endl;
+                std::cerr << "Error: redirection has invalid format" << std::endl;
                 return (false);
             }
             //std::cout << "pos: " << pos << std::endl;
@@ -251,5 +287,6 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             //std::cout << value << std::endl;
         }
     }
+    std::cerr << "Error: location block not closed" << std::endl;
     return (false);
 }

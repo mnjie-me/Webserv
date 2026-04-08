@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:41:43 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 12:48:47 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 18:38:10 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,3 +15,6 @@
 #include <string>
 
 std::string trim(const std::string& line);
+bool expectOpenBrace(std::ifstream& file);
+
+

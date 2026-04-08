@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:20:01 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 12:45:14 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 18:37:58 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,4 +58,18 @@ std::string trim(const std::string& line)
     size_t end = line.find_last_not_of(" \t\n\r\f\v");
     std::string trimmed = line.substr(start, end - start + 1);
     return (trimmed);
+}
+bool expectOpenBrace(std::ifstream& file)
+{
+    std::string line;
+    while (getline(file, line))
+    {
+        std::string trimmed = trim(line);
+        if (trimmed.empty() || trimmed[0] == '#')
+            continue ;
+        if (trimmed == "{")
+            return (true);
+        return (false);
+    }
+    return (false);
 }
