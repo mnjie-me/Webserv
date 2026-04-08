@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:36:49 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 14:01:46 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 14:55:21 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,5 @@ class LocationConfig
         LocationConfig& operator=(const LocationConfig& other);
         ~LocationConfig();
 
-        void parseLocation(LocationConfig& config, std::ifstream& file);
+        bool parseLocation(LocationConfig& config, std::ifstream& file);
 };

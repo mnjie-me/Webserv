@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:35:29 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 12:47:27 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 14:49:47 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,5 @@ class ServerConfig
         ~ServerConfig();
 
         void parseConfigFile(char *av);
-        void parseServer(ServerConfig& config, std::ifstream& file);
+        bool parseServer(ServerConfig& config, std::ifstream& file);
 };

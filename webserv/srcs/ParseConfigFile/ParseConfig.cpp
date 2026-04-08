@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 14:18:31 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 14:55:48 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,12 @@ void ServerConfig::parseConfigFile(char *av)
             || trimmed[6] == ' ' || trimmed[6] == '{'))
         {
             ServerConfig config;
-            parseServer(config, file);
+            if (!parseServer(config, file))
+                return ;
             servers.push_back(config);
         }
+        else if (trimmed == "}" || trimmed == "};")
+            continue ;
         else
         {
             std::cerr << "Error: unexpected token " << trimmed << std::endl;
@@ -45,7 +48,7 @@ void ServerConfig::parseConfigFile(char *av)
     file.close();
 }
 
-void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
+bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
 {
     std::string line;
     while (getline(file, line))
@@ -54,7 +57,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
         if (trimmed.empty() || trimmed[0] == '#')
             continue ;
         if (trimmed == "}" || trimmed == "};")
-            return ;
+            return (true);
         if (trimmed.substr(0, 6) == "listen")
         {
             std::string value = trim(trimmed.substr(6));
@@ -65,7 +68,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             if (*end != '\0')
             {
                 std::cerr << "Error: invalid port" << std::endl;
-                return ;
+                return (false);
             }
             config.port = (int)port;
         }
@@ -77,7 +80,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             if (value.empty())
             {
                 std::cerr << "Error: empty server name" << std::endl;
-                return ;
+                return (false);
             }
             config.serverName = value;
         }
@@ -88,7 +91,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             if (pos == std::string::npos)
             {
                 std::cerr << "Error: error_page has invalid format" << std::endl;
-                return ;
+                return (false);
             }
             std::string key = value.substr(0, pos);
             std::string val = trim(value.substr(pos));
@@ -97,14 +100,14 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             if (val.empty())
             {
                 std::cerr << "Error: empty error route" << std::endl;
-                return ;
+                return (false);
             }
             char *end;
             long errorNum = strtol(key.c_str(), &end, 10);
             if (*end != '\0')
             {
                 std::cerr << "Error: invalid error code" << std::endl;
-                return ;
+                return (false);
             }
             config.errorPages[(int)errorNum] = val;
         }
@@ -116,7 +119,7 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             if (value.empty())
             {
                 std::cerr << "Error: empty client max body size" << std::endl;
-                return ;
+                return (false);
             }
             size_t multiplier = 1;
             char last = value[value.size() - 1];
@@ -126,7 +129,20 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 multiplier = 1024 * 1024;
             else if (last == 'g' || last == 'G')
                 multiplier = 1024 * 1024 * 1024;
-            config.clientMaxBodySize = std::atoi(value.c_str()) * multiplier;
+            else if (!std::isdigit(last))
+            {
+                std::cerr << "Error: invalid client_max_body_size" << std::endl;
+                return (false);
+            }
+            char *end;
+            long size = strtol(value.c_str(), &end, 10);
+            if (*end != '\0' && *end != 'k' && *end != 'K' 
+                && *end != 'm' && *end != 'M' && *end != 'g' && *end != 'G')
+            {
+                std::cerr << "Error: invalid client_max_body_size" << std::endl;
+                return (false);
+            }
+            config.clientMaxBodySize = (size_t)size * multiplier;
         }
         else if (trimmed.substr(0, 8) == "location")
         {
@@ -134,27 +150,17 @@ void ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             if (!path.empty() && path[path.size() - 1] == '{')
                 path = trim(path.substr(0, path.size() - 1));
             LocationConfig loc;
-            loc.parseLocation(loc, file);
+            if (!loc.parseLocation(loc, file))
+                return (false);
             config.locations[path] = loc;
-            /* std::map<std::string, LocationConfig>::iterator it;
-
-            for (it = locations.begin(); it != locations.end(); ++it)
-            {
-                std::cout << "Location path: " << it->first <<  " " << it->second << std::endl;
-            } */
-        }
-        else 
-        {
-            std::cerr << "Error: unexpected token " << trimmed << std::endl;
-            return ;
         }
     }
+    return (false);
 }
 
-void LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
+bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
 {
     std::string line;
-    (void)config;
     //std::cout << "LOCATION" << std::endl;
     while (getline(file, line))
     {
@@ -162,7 +168,7 @@ void LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
         if (trimmed.empty() || trimmed[0] == '#')
             continue ;
         if (trimmed == "}" || trimmed == "};")
-            return ;
+            return (true);
         //std::cout << line << std::endl;
         if (trimmed.substr(0, 4) == "root")
         {
@@ -226,7 +232,7 @@ void LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             if (pos == std::string::npos)
             {
                 std::cerr << "Error: return has invalid format" << std::endl;
-                return ;
+                return (false);
             }
             //std::cout << "pos: " << pos << std::endl;
             std::string error = value.substr(0, pos);
@@ -245,4 +251,5 @@ void LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             //std::cout << value << std::endl;
         }
     }
+    return (false);
 }
