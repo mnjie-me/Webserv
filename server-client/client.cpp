@@ -1,10 +1,10 @@
 #include "client.hpp"
 #include <unistd.h>
+#include <sys/socket.h>
 
+Client::Client() : fd(-1), shouldClose(false) {}
 
-Client::Client() : fd(-1) {}
-
-Client::Client(int fd) : fd(fd) {}
+Client::Client(int fd) : fd(fd), shouldClose(false) {}
 
 int Client::getFd() const
 {
@@ -13,29 +13,45 @@ int Client::getFd() const
 
 std::string& Client::getBuffer()
 {
-    return buffer;
+    return readBuffer;
 }
 
 ssize_t Client::readData()
 {
     char temp[1024];
-
-    ssize_t bytes = read(fd, temp, sizeof(temp));  
-
+    ssize_t bytes = read(fd, temp, sizeof(temp));
     if (bytes > 0)
-        buffer.append(temp, bytes);
-
-    return bytes;  
+        readBuffer.append(temp, bytes);
+    return bytes;
 }
 
 bool Client::isRequestComplete() const
 {
-    return (buffer.find("\r\n\r\n") != std::string::npos);
+    return (readBuffer.find("\r\n\r\n") != std::string::npos);
 }
 
 void Client::resetBuffer()
 {
-    buffer.clear();
+    readBuffer.clear();
+}
+
+void Client::appendToSendBuffer(const std::string& data)
+{
+    writeBuffer.append(data);
+}
+
+ssize_t Client::drainSendBuffer()
+{
+    if (writeBuffer.empty()) return 0;
+    ssize_t bytes = send(fd, writeBuffer.c_str(), writeBuffer.size(), 0);
+    if (bytes > 0)
+        writeBuffer.erase(0, bytes);
+    return bytes;
+}
+
+bool Client::hasPendingData() const
+{
+    return !writeBuffer.empty();
 }
 
 

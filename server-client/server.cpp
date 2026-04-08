@@ -1,37 +1,14 @@
 #include "server.hpp"
 
-#include <iostream>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <cstring>
 
 Server::Server(int port)
 {
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd < 0)
-        throw std::runtime_error("socket failed");
-
-    int opt = 1;
-    if(setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-        throw std::runtime_error("setsockopt failed");
-
-    sockaddr_in addr;
-    std::memset(&addr, 0, sizeof(addr));
-
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = INADDR_ANY;
-
-    if (bind(server_fd, (sockaddr*)&addr, sizeof(addr)) < 0)
-        throw std::runtime_error("bind failed");
-
-    listen(server_fd, 10);
+    server_fd = Socket::create(port);
 
     pollfd pfd;
     pfd.fd = server_fd;
     pfd.events = POLLIN;
     pfd.revents = 0;
-
     fds.push_back(pfd);
 }
 
@@ -42,22 +19,31 @@ void Server::run()
         if (poll(fds.data(), fds.size(), -1) < 0)
             continue;
 
+        std::vector<int> readReady;
+        std::vector<int> writeReady;
         for (size_t i = 0; i < fds.size(); i++)
         {
-            if (fds[i].revents & POLLIN)
+            if (fds[i].revents & (POLLERR | POLLHUP))
             {
-                int current_fd = fds[i].fd;
-
-                if (current_fd == server_fd)
-                    acceptNewClient();
-                else
-                {
-                    handleClient(current_fd);
-                    break; 
-                }
+                removeClient(fds[i].fd);
+                continue;
             }
+            if (fds[i].revents & POLLIN)
+                readReady.push_back(fds[i].fd);
+            if (fds[i].revents & POLLOUT)
+                writeReady.push_back(fds[i].fd);
             fds[i].revents = 0;
         }
+
+        for (size_t i = 0; i < readReady.size(); i++)
+        {
+            if (readReady[i] == server_fd)
+                acceptNewClient();
+            else
+                handleClient(readReady[i]);
+        }
+        for (size_t i = 0; i < writeReady.size(); i++)
+            handleWrite(writeReady[i]);
     }
 }
 
@@ -67,21 +53,45 @@ void Server::acceptNewClient()
     if (client_fd < 0)
         return;
 
+    Socket::setNonBlocking(client_fd);
+
     pollfd pfd;
     pfd.fd = client_fd;
     pfd.events = POLLIN;
     pfd.revents = 0;
-
     fds.push_back(pfd);
-    clients[client_fd] = Client(client_fd);
 
+    clients[client_fd] = Client(client_fd);
     std::cout << "New client connected: " << client_fd << std::endl;
 }
 
-std::string handle_request(const std::string& request)
+void Server::handleWrite(int fd)
 {
-    (void)request;
-    return "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nHello";
+    Client& client = clients[fd];
+
+    ssize_t sent = client.drainSendBuffer();
+    if (sent <= 0)
+    {
+        removeClient(fd);
+        return;
+    }
+
+    if (!client.hasPendingData())
+    {
+        if (client.shouldClose)
+        {
+            removeClient(fd);
+            return;
+        }
+        for (size_t i = 0; i < fds.size(); i++)
+        {
+            if (fds[i].fd == fd)
+            {
+                fds[i].events = POLLIN;
+                break;
+            }
+        }
+    }
 }
 
 
@@ -97,35 +107,28 @@ void Server::handleClient(int fd)
 
     if (clients[fd].isRequestComplete())
     {
-        std::cout << "Request from client " << fd << ":\n"
-                  << clients[fd].getBuffer() << std::endl;
-
-        
-        std::string response = handle_request(clients[fd].getBuffer());
-
-        write(fd, response.c_str(), response.size());
-
-        std::cout << "Response sent to client " << fd << ":\n"
-                  << response << std::endl;
-
         std::string buffer = clients[fd].getBuffer();
         bool shouldClose = (buffer.find("Connection: close") != std::string::npos);
 
-        if (shouldClose)
+        std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nHello";
+        clients[fd].appendToSendBuffer(response);
+        clients[fd].shouldClose = shouldClose;  // ← set the flag here
+        clients[fd].resetBuffer();
+        
+        for (size_t i = 0; i < fds.size(); i++)
         {
-            std::cout << "Closing client due to Connection: close: " << fd << std::endl;
-            removeClient(fd);
-        }
-        else
-        {
-            clients[fd].resetBuffer();
+            if (fds[i].fd == fd)
+            {
+                fds[i].events = POLLIN | POLLOUT;
+                break;
+            }
         }
     }
 }
 
 void Server::removeClient(int fd)
 {
-    close(fd);
+    Socket::close(fd);
     clients.erase(fd);
 
     for (size_t i = 0; i < fds.size(); i++)
@@ -139,30 +142,24 @@ void Server::removeClient(int fd)
 
     std::cout << "Client disconnected: " << fd << std::endl;
 }
+
 void Server::shutdown()
 {
-    
-   for (auto& pair : clients)
-        {
-            int fd = pair.first;
-            std::cout << "Closing client: " << fd << std::endl;
-            close(fd);
-        }
-        clients.clear();
+    for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it)
+    {
+        std::cout << "Closing client: " << it->first << std::endl;
+        Socket::close(it->first);
+    }
+    clients.clear();
 
-        
-        if (server_fd >= 0)
-        {
-            std::cout <<  std::endl;
-            std::cout << "Closing server socket: " << server_fd << std::endl;
-            close(server_fd);
-            server_fd = -1;
-        }
+    if (server_fd >= 0)
+    {
+        Socket::close(server_fd);
+        server_fd = -1;
+    }
 
-        
-        fds.clear();
-
-        std::cout << "Server shutdown complete." << std::endl;
+    fds.clear();
+    std::cout << "Server shutdown complete." << std::endl;
 }
 
 /*   -------TO TEST!!-------

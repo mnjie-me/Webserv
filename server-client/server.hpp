@@ -2,47 +2,32 @@
 #define SERVER_HPP
 
 #include <vector>
+#include <map>
 #include <iostream>
 #include <string>
-#include <cstring>      
-
-#include <unistd.h>     
-#include <fcntl.h>      
-
-#include <sys/types.h>
-#include <sys/socket.h> 
-
-#include <netinet/in.h> 
-#include <arpa/inet.h>  
 
 #include <poll.h>
-#include <map> 
-#include "client.hpp"  
 
+#include "socket.hpp"
+#include "client.hpp"
 
-class Server 
+class Server
 {
-    private: 
-        int server_fd;
-        std::vector<pollfd> fds;
-        std::map<int, Client> clients;
+private:
+    int                     server_fd;
+    std::vector<pollfd>     fds;
+    std::map<int, Client>   clients;
 
-        void acceptNewClient();
-        void handleClient(int fd);
-        void removeClient(int fd);
-        
+    void acceptNewClient();
+    void handleClient(int fd);
+    void removeClient(int fd);
+    void handleWrite(int fd);
 
+public:
+    Server(int port);
+    void run();
+    void shutdown();
 
-    public:
-        Server (int port);
-
-      //  ~Server();
-
-      //  void init();
-        void run();
-        void shutdown();
 };
 
 #endif
-
-
