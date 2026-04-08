@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 19:03:54 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/08 22:43:53 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,11 @@ void ServerConfig::parseConfigFile(char *av)
             ServerConfig config;
             if (!parseServer(config, file))
                 return ;
-            if (config.locations.empty())
+/*             if (config.locations.empty())
             {
                 std::cerr << "Error: server has no locations" << std::endl;
                 return ;
-            }
+            } */
             servers.push_back(config);
         }
         else if (trimmed == "}" || trimmed == "};")
@@ -85,7 +85,12 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 std::cerr << "Error: invalid port" << std::endl;
                 return (false);
             }
-            config.port = (int)port;
+            if (port < 1 || port > 65535)
+            {
+                std::cerr << "Error: port out of range" << std::endl;
+                return (false);
+            }
+            config.port = static_cast<int>(port);
         }
         else if (trimmed.substr(0, 11) == "server_name")
         {
@@ -105,7 +110,7 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             size_t pos = value.find(' ');
             if (pos == std::string::npos)
             {
-                std::cerr << "Error: error_page has invalid format" << std::endl;
+                std::cerr << "Error: error page has invalid format" << std::endl;
                 return (false);
             }
             std::string key = value.substr(0, pos);
@@ -124,7 +129,7 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 std::cerr << "Error: invalid error code" << std::endl;
                 return (false);
             }
-            config.errorPages[(int)errorNum] = val;
+            config.errorPages[static_cast<int>(errorNum)] = val;
         }
         else if (trimmed.substr(0, 20) == "client_max_body_size")
         {
@@ -158,7 +163,7 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 std::cerr << "Error: invalid client max body size" << std::endl;
                 return (false);
             }
-            config.clientMaxBodySize = (size_t)size * multiplier;
+            config.clientMaxBodySize = static_cast<size_t>(size) * multiplier;
         }
         else if (trimmed.substr(0, 8) == "location")
         {
