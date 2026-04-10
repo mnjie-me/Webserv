@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 22:43:53 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/10 14:02:20 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,6 @@ void ServerConfig::parseConfigFile(char *av)
             ServerConfig config;
             if (!parseServer(config, file))
                 return ;
-/*             if (config.locations.empty())
-            {
-                std::cerr << "Error: server has no locations" << std::endl;
-                return ;
-            } */
             servers.push_back(config);
         }
         else if (trimmed == "}" || trimmed == "};")
@@ -110,7 +105,7 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
             size_t pos = value.find(' ');
             if (pos == std::string::npos)
             {
-                std::cerr << "Error: error page has invalid format" << std::endl;
+                std::cerr << "Error: invalid error page format" << std::endl;
                 return (false);
             }
             std::string key = value.substr(0, pos);
@@ -180,6 +175,11 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
                 std::cerr << "Error: location path is empty" << std::endl;
                 return (false);
             }
+            if (path[0] != '/')
+            {
+                std::cerr << "Error: location path must start with /" << std::endl;
+                return (false);
+            }
             LocationConfig loc;
             if (!loc.parseLocation(loc, file))
                 return (false);
@@ -198,7 +198,6 @@ bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
 bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
 {
     std::string line;
-    //std::cout << "LOCATION" << std::endl;
     while (getline(file, line))
     {
         std::string trimmed = trim(line);
@@ -206,14 +205,12 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             continue ;
         if (trimmed == "}" || trimmed == "};")
             return (true);
-        //std::cout << line << std::endl;
         if (trimmed.substr(0, 4) == "root")
         {
             std::string value = trim(trimmed.substr(4));
             if (!value.empty() && value[value.size() - 1] == ';')
                 value.erase(value.size() - 1);
             config.root = value;
-            //std::cout << value << std::endl;
         }
         else if (trimmed.substr(0, 7) == "methods")
         {
@@ -227,11 +224,9 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
                 if (pos == std::string::npos)
                 {
                     config.methods.push_back(value.substr(start));
-                    //std::cout << config.methods.back() << std::endl;
                     break ;
                 }
                 config.methods.push_back(value.substr(start, pos - start));
-                //std::cout << config.methods.back() << std::endl;
                 start = pos + 1;
             }
         }
@@ -241,7 +236,6 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             if (!value.empty() && value[value.size() - 1] == ';')
                 value.erase(value.size() - 1);
             config.index = value;
-            //std::cout << value << std::endl;
         }
         else if (trimmed.substr(0, 9) == "autoindex")
         {
@@ -263,25 +257,21 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             if (!value.empty() && value[value.size() - 1] == ';')
                 value.erase(value.size() - 1);
             config.uploadStore = value;
-            //std::cout << value << std::endl;
         }
         else if (trimmed.substr(0, 6) == "return")
         {
             std::string value = trim(trimmed.substr(6));
-            //std::cout << "value: [" << value << "]" << std::endl;
             size_t pos = value.find(' ');
             if (pos == std::string::npos)
             {
-                std::cerr << "Error: redirection has invalid format" << std::endl;
+                std::cerr << "Error: invalid redirection format" << std::endl;
                 return (false);
             }
-            //std::cout << "pos: " << pos << std::endl;
             std::string error = value.substr(0, pos);
             std::string url = trim(value.substr(pos));
             if (!url.empty() && url[url.size() - 1] == ';')
                 url.erase(url.size() - 1);
             config.redirect = std::make_pair(std::atoi(error.c_str()), url);
-            //std::cout << error << " " << url << std::endl;
         }
         else if (trimmed.substr(0, 8) == "cgi_pass")
         {
@@ -289,7 +279,6 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             if (!value.empty() && value[value.size() - 1] == ';')
                 value.erase(value.size() - 1);
             config.cgiPass = value;
-            //std::cout << value << std::endl;
         }
     }
     std::cerr << "Error: location block not closed" << std::endl;

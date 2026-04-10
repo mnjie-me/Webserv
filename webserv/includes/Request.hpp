@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/07 13:11:32 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/10 14:27:39 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class Request
         void validateRequestLine();
         void validateHeaders();
         void validateBody(size_t clientMaxBodySize);
-        void setError(int code);
         
         public:
         
@@ -46,11 +45,12 @@ class Request
         ~Request();
         
         void parseRequest(const std::string& raw, const ServerConfig& config);
-        int  getError();
-        bool getIsValid();
-        std::string getMethod();
-        std::string getPath();
-        std::string getVersion();
-        std::map<std::string, std::string> getHeaders();
-        std::string getBody();
+        void setError(int code) const;
+        int  getError() const;
+        bool getIsValid() const;
+        std::string getMethod() const;
+        std::string getPath() const;
+        std::string getVersion() const;
+        std::map<std::string, std::string> getHeaders() const;
+        std::string getBody() const;
 };

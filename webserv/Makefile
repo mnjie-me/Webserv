@@ -8,6 +8,7 @@ SRCS =	srcs/main.cpp \
 		srcs/utils/UtilsServer.cpp \
 		srcs/ParseRequest/Request.cpp srcs/ParseRequest/ParseRequest.cpp \
 		srcs/ParseConfigFile/ServerConfig.cpp srcs/ParseConfigFile/LocationConfig.cpp srcs/ParseConfigFile/ParseConfig.cpp\
+		srcs/Router/HandleRequest.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
