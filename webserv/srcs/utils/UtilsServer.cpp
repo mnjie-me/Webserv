@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:20:01 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/08 18:37:58 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/12 12:59:25 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,32 +20,32 @@ void Request::setError(int code)
     isValid = false;
 }
 
-int Request::getError()
+int Request::getError() const
 {
     return (errorCode);
 }
 
-bool Request::getIsValid()
+bool Request::getIsValid() const
 {
     return (isValid);
 }
-std::string Request::getMethod()
+std::string Request::getMethod() const
 {
     return (method);
 }
-std::string Request::getPath()
+std::string Request::getPath() const
 {
     return (path);
 }
-std::string Request::getVersion()
+std::string Request::getVersion() const
 {
     return (version);
 }
-std::map<std::string, std::string> Request::getHeaders()
+std::map<std::string, std::string> Request::getHeaders() const
 {
     return (headers);
 }
-std::string Request::getBody()
+std::string Request::getBody() const
 {
     return (body);
 }

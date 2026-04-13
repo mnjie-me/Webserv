@@ -6,14 +6,14 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/10 14:02:20 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/12 13:50:26 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerConfig.hpp"
 #include "LocationConfig.hpp"
 
-void ServerConfig::parseConfigFile(char *av)
+void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
 {
     std::ifstream   file(av);
 
@@ -23,7 +23,6 @@ void ServerConfig::parseConfigFile(char *av)
         return ;
     }
     std::string line;
-    std::vector<ServerConfig> servers;
     while (getline(file, line))
     {
         std::string trimmed = trim(line);

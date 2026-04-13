@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/10 14:27:39 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/12 18:13:06 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ class Request
         ~Request();
         
         void parseRequest(const std::string& raw, const ServerConfig& config);
-        void setError(int code) const;
+        void setError(int code);
         int  getError() const;
         bool getIsValid() const;
         std::string getMethod() const;

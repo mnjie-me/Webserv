@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/10 14:31:51 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/13 13:36:15 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,30 @@
 
 void Router::handleRequest(Request& request, const ServerConfig& config)
 {
-    const LocationConfig* loc = config.findLocation(request.getPath());
+    std::string matchedPath;
+    const LocationConfig* loc = config.findLocation(request.getPath(), matchedPath);
+    
     if (loc == NULL)
     {
-       request.setError(404);
+        request.setError(404);
         return ;
     }
-    
+    if (handleRedirect(request, *loc))
+        return ;
+    if (!validateMethod(request, *loc))
+        return ;
+    std::string path = buildPath(request, *loc, matchedPath);
+    if (isCGI(path, *loc))
+        return ;
 }
 
-const LocationConfig* ServerConfig::findLocation(const std::string& path) const
+const LocationConfig* ServerConfig::findLocation(const std::string& path, std::string& matchedPath) const
 {
     std::map<std::string, LocationConfig>::const_iterator it = locations.begin();
     const LocationConfig* bestLoc = NULL;
     size_t len = 0;
 
-    std::cout << path << std::endl;
+    it = locations.begin();
     while (it != locations.end())
     {
         const std::string locPath = it->first;
@@ -38,13 +46,52 @@ const LocationConfig* ServerConfig::findLocation(const std::string& path) const
         {
             bestLoc = &it->second;
             len = locPath.size();
+            matchedPath = locPath;
         }
         it++;
     }
     return (bestLoc);
 }
 
-/* void ServerConfig::validateLoc()
+bool Router::handleRedirect(Request& request, const LocationConfig& loc)
 {
-    
-} */
+    if (loc.redirect.second.empty())
+        return (false);
+    request.setError(loc.redirect.first);
+    return (true);
+}
+
+
+bool Router::validateMethod(Request& request, const LocationConfig& loc)
+{
+    size_t i = 0;
+
+    while (i < loc.methods.size())
+    {
+        if (loc.methods[i] == request.getMethod())
+            return (true);
+        i++;
+    }
+    request.setError(405);
+    return (false);
+}
+
+std::string Router::buildPath(Request& request, const LocationConfig& loc, std::string matchedPath)
+{    
+    std::string value = request.getPath().substr(matchedPath.size());
+    std::string fullPath = loc.root + value;
+    return (fullPath);
+}
+
+bool Router::isCGI(const std::string& path, const LocationConfig& loc)
+{
+    if (loc.cgiPass.empty())
+        return (false);
+    size_t pos = path.rfind('.');
+    if (pos == std::string::npos)
+        return (false);
+    std::string value = path.substr(pos);
+    if (value == loc.cgiPass)
+        return (true);
+    return (false);
+}
