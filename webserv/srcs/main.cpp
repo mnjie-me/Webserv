@@ -6,13 +6,14 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:50:08 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/13 13:32:38 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/14 19:47:32 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "ServerConfig.hpp"
 #include "Router.hpp"
+#include "MethodHandler.hpp"
 
 int main(int ac, char **av)
 {
@@ -20,6 +21,7 @@ int main(int ac, char **av)
     ServerConfig config;
     std::vector<ServerConfig> servers;
     Router  route;
+    MethodHandler method;
 
     if (ac == 2)
     {
@@ -32,6 +34,7 @@ int main(int ac, char **av)
         else
         {
             route.handleRequest(input, servers[0]);
+            method.executeMethod(input, route);
         }
     }
     return (0);    

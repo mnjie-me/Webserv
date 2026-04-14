@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/13 13:36:15 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/14 20:59:58 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,14 @@ void Router::handleRequest(Request& request, const ServerConfig& config)
         request.setError(404);
         return ;
     }
-    if (handleRedirect(request, *loc))
+    redirect = handleRedirect(request, *loc);
+    if (redirect)
         return ;
     if (!validateMethod(request, *loc))
         return ;
-    std::string path = buildPath(request, *loc, matchedPath);
-    if (isCGI(path, *loc))
+    builtPath = buildPath(request, *loc, matchedPath);
+    CGI = isCGI(builtPath, *loc);
+    if (CGI)
         return ;
 }
 
