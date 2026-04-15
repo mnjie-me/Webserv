@@ -9,7 +9,7 @@ SRCS =	srcs/main.cpp \
 		srcs/ParseRequest/Request.cpp srcs/ParseRequest/ParseRequest.cpp \
 		srcs/ParseConfigFile/ServerConfig.cpp srcs/ParseConfigFile/LocationConfig.cpp srcs/ParseConfigFile/ParseConfig.cpp\
 		srcs/Router/Router.cpp srcs/Router/HandleRequest.cpp \
-		srcs/MethodHandler/MethodHandler.cpp \
+		srcs/MethodHandler/MethodHandler.cpp srcs/MethodHandler/ExecuteMethod.cpp\
 
 OBJS = $(SRCS:.cpp=.o)
 

@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MethodHandler.cpp                                  :+:      :+:    :+:   */
+/*   ExecuteMethod.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/14 20:13:15 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/15 13:32:57 by mari-cruz        ###   ########.fr       */
+/*   Created: 2026/04/15 13:32:42 by mari-cruz         #+#    #+#             */
+/*   Updated: 2026/04/15 14:25:03 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "MethodHandler.hpp"
 
-MethodHandler::MethodHandler() {}
-
-MethodHandler::MethodHandler(const MethodHandler& other)
+void MethodHandler::executeMethod(Request& request, const Router& router)
 {
-    (void)other;
+    (void)request;
+    (void)router;
+/* 
+    if (request.getError() != 0)
+    {
+        handleError(request);
+    }
+    else if (router.getCGI())
+    {
+        handleCGI(request);
+    }
+    else if (router.getRedirect())
+    {
+        handleRedirect(request)
+    } */
+    //std::cout << "<html><h1>404 Not Found</h1></html>" << std::endl;
 }
-
-MethodHandler& MethodHandler::operator=(const MethodHandler& other)
-{
-    (void)other;
-    return (*this);
-}
-
-MethodHandler::~MethodHandler() {}
-
-

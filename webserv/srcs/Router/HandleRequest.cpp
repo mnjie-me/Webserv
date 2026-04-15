@@ -6,27 +6,28 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/14 20:59:58 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/15 15:16:00 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ServerConfig.hpp"
 #include "Router.hpp"
 
 void Router::handleRequest(Request& request, const ServerConfig& config)
 {
     std::string matchedPath;
     const LocationConfig* loc = config.findLocation(request.getPath(), matchedPath);
+    std::map<int, std::string>::const_iterator it;
     
     if (loc == NULL)
     {
         request.setError(404);
+        saveErrorUrl(request, config);
         return ;
     }
     redirect = handleRedirect(request, *loc);
     if (redirect)
         return ;
-    if (!validateMethod(request, *loc))
+    if (!validateMethod(request, config, *loc))
         return ;
     builtPath = buildPath(request, *loc, matchedPath);
     CGI = isCGI(builtPath, *loc);
@@ -55,16 +56,28 @@ const LocationConfig* ServerConfig::findLocation(const std::string& path, std::s
     return (bestLoc);
 }
 
+void Router::saveErrorUrl(Request& request, const ServerConfig& config)
+{
+    std::map<int, std::string>::const_iterator it;
+    
+    it = config.errorPages.find(request.getError());
+    if (it != config.errorPages.end())
+        errorUrl = it->second;
+    std::cout << errorUrl << std::endl;
+}
+
 bool Router::handleRedirect(Request& request, const LocationConfig& loc)
 {
     if (loc.redirect.second.empty())
         return (false);
     request.setError(loc.redirect.first);
+    redirectUrl.first = request.getError();
+    redirectUrl.second = loc.redirect.second;
     return (true);
 }
 
 
-bool Router::validateMethod(Request& request, const LocationConfig& loc)
+bool Router::validateMethod(Request& request, const ServerConfig& config, const LocationConfig& loc)
 {
     size_t i = 0;
 
@@ -75,6 +88,7 @@ bool Router::validateMethod(Request& request, const LocationConfig& loc)
         i++;
     }
     request.setError(405);
+    saveErrorUrl(request, config);
     return (false);
 }
 
@@ -82,6 +96,8 @@ std::string Router::buildPath(Request& request, const LocationConfig& loc, std::
 {    
     std::string value = request.getPath().substr(matchedPath.size());
     std::string fullPath = loc.root + value;
+    cgiPath = fullPath;
+    std::cout << cgiPath << std::endl;
     return (fullPath);
 }
 

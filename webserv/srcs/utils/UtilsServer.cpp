@@ -6,12 +6,13 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:20:01 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/14 19:51:47 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/15 14:21:28 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerConfig.hpp"
 #include "UtilsServer.hpp"
+#include "Request.hpp"
 
 std::string trim(const std::string& line)
 {
@@ -36,3 +37,4 @@ bool expectOpenBrace(std::ifstream& file)
     }
     return (false);
 }
+
