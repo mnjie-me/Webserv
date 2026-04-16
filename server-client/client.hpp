@@ -12,6 +12,7 @@ private:
     std::string readBuffer;
     std::string writeBuffer;
     sockaddr_in addr;
+    time_t lastActivity;
 
 public:
     bool        shouldClose;
@@ -20,7 +21,9 @@ public:
 
     int getFd() const;
     std::string& getBuffer();
-    ssize_t readData();
+    ssize_t readData(); 
+    time_t getLastActivity() const;
+
     bool    isRequestComplete() const;
     void    resetBuffer();
 

@@ -21,7 +21,7 @@ private:
     void acceptNewClient();
     void handleClient(int fd);
     void removeClient(int fd);
-    void handleWrite(int fd);
+    void handleResponse(int fd);
 
 public:
     Server(int port);

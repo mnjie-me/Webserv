@@ -2,9 +2,9 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
-Client::Client() : fd(-1), shouldClose(false) {}
+Client::Client() : fd(-1), shouldClose(false), lastActivity(time(NULL))  {}
 
-Client::Client(int fd) : fd(fd), shouldClose(false) {}
+Client::Client(int fd) : fd(fd), shouldClose(false), lastActivity(time(NULL)) {}
 
 int Client::getFd() const
 {
@@ -21,7 +21,10 @@ ssize_t Client::readData()
     char temp[1024];
     ssize_t bytes = read(fd, temp, sizeof(temp));
     if (bytes > 0)
+    {
         readBuffer.append(temp, bytes);
+        lastActivity = time(NULL);  
+    }
     return bytes;
 }
 
@@ -35,6 +38,11 @@ void Client::resetBuffer()
     readBuffer.clear();
 }
 
+time_t Client::getLastActivity() const
+{
+    return lastActivity;
+}
+
 void Client::appendToSendBuffer(const std::string& data)
 {
     writeBuffer.append(data);
@@ -42,7 +50,10 @@ void Client::appendToSendBuffer(const std::string& data)
 
 ssize_t Client::drainSendBuffer()
 {
-    if (writeBuffer.empty()) return 0;
+    if (writeBuffer.empty()) 
+    {
+        return 0;
+    }
     ssize_t bytes = send(fd, writeBuffer.c_str(), writeBuffer.size(), 0);
     if (bytes > 0)
         writeBuffer.erase(0, bytes);
