@@ -1,30 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MethodHandler.cpp                                  :+:      :+:    :+:   */
+/*   Method.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 20:13:15 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/15 13:32:57 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/17 13:34:06 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "MethodHandler.hpp"
+#include "Method.hpp"
 
-MethodHandler::MethodHandler() {}
+Method::Method() {}
 
-MethodHandler::MethodHandler(const MethodHandler& other)
+Method::Method(const Method& other)
 {
     (void)other;
 }
 
-MethodHandler& MethodHandler::operator=(const MethodHandler& other)
+Method& Method::operator=(const Method& other)
 {
     (void)other;
     return (*this);
 }
 
-MethodHandler::~MethodHandler() {}
+Method::~Method() {}
 
 

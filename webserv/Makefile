@@ -5,11 +5,12 @@ CXXFLAGS = -Wall -Werror -Wextra -std=c++98
 CPPFLAGS = -Iincludes
 
 SRCS =	srcs/main.cpp \
-		srcs/utils/UtilsServer.cpp srcs/utils/Getters.cpp\
+		srcs/utils/UtilsServer.cpp srcs/utils/Getters.cpp srcs/utils/Setters.cpp \
 		srcs/ParseRequest/Request.cpp srcs/ParseRequest/ParseRequest.cpp \
 		srcs/ParseConfigFile/ServerConfig.cpp srcs/ParseConfigFile/LocationConfig.cpp srcs/ParseConfigFile/ParseConfig.cpp\
 		srcs/Router/Router.cpp srcs/Router/HandleRequest.cpp \
-		srcs/MethodHandler/MethodHandler.cpp srcs/MethodHandler/ExecuteMethod.cpp\
+		srcs/Method/Method.cpp srcs/Method/ExecuteMethod.cpp\
+		srcs/Response/Response.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 

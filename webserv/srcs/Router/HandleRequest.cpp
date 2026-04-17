@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/15 15:16:00 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/17 14:18:17 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ std::string Router::buildPath(Request& request, const LocationConfig& loc, std::
     std::string value = request.getPath().substr(matchedPath.size());
     std::string fullPath = loc.root + value;
     cgiPath = fullPath;
-    std::cout << cgiPath << std::endl;
     return (fullPath);
 }
 

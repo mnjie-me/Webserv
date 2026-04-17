@@ -6,18 +6,13 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 19:51:25 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/14 20:10:19 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/17 13:53:33 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "Router.hpp"
-
-void Request::setError(int code)
-{
-    errorCode = code;
-    isValid = false;
-}
+#include "Response.hpp"
 
 int Request::getError() const
 {
@@ -60,4 +55,34 @@ bool Router::getCGI()const
 bool Router::getRedirect()const
 {
     return (redirect);
+}
+
+std::string Router::getErrorUrl() const
+{
+    return (errorUrl);
+}
+
+std::pair<int, std::string> Router::getredirectUrl() const
+{
+    return (redirectUrl);
+}
+
+std::string Router::getCgiPath() const
+{
+    return (cgiPath);
+}
+
+int Response::getStatusCode() const
+{
+    return (statusCode);
+}
+
+std::string Response::getBody() const
+{
+    return (body);
+}
+
+std::map<std::string, std::string> Response::getHeaders() const
+{
+    return (headers);
 }
