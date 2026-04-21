@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 19:51:25 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/17 13:53:33 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/21 13:05:04 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,16 @@ std::pair<int, std::string> Router::getredirectUrl() const
 std::string Router::getCgiPath() const
 {
     return (cgiPath);
+}
+
+std::string Router::getQuery() const
+{
+    return (cgiQuery);
+}
+
+std::string Router::getCgiPass() const
+{
+    return (cgiPass);
 }
 
 int Response::getStatusCode() const

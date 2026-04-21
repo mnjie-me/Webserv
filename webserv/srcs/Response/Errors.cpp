@@ -1,52 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ExecuteMethod.cpp                                  :+:      :+:    :+:   */
+/*   Errors.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/15 13:32:42 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/17 14:20:52 by mari-cruz        ###   ########.fr       */
+/*   Created: 2026/04/21 12:23:30 by mari-cruz         #+#    #+#             */
+/*   Updated: 2026/04/21 12:23:58 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Method.hpp"
-
-Response Method::executeMethod(const Request& request, const Router& router)
-{
-    Response response;
-    
-    if (request.getError() != 0)
-    {
-        handleError(request, router);
-    }
-/*
-    else if (router.getCGI())
-    {
-        handleCGI(request);
-    }
-    else if (router.getRedirect())
-    {
-        handleRedirect(request)
-    } */
-    //std::cout << "<html><h1>404 Not Found</h1></html>" << std::endl;
-    return (response);
-}
 
 Response Method::handleError(const Request& request, const Router& router)
 {
     Response response;
     
     response.setStatusCode(request.getError());
-    if (router.getErrorUrl().empty())
+    if (!router.getErrorUrl().empty())
     {
         std::ifstream file(router.getErrorUrl().c_str());
         std::string   line;
         std::string   buf;
         if (!file.is_open())
-        {
             response.setBody(defaultErrorPage(request.getError()));
-        }
         else
         {
             while (std::getline(file, line))

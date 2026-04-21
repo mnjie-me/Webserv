@@ -6,13 +6,13 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/12 13:00:36 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/15 15:15:42 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/21 13:03:07 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Router.hpp"
 
-Router::Router() : builtPath(""), CGI(false), redirect(false), errorUrl(""), cgiPath("") {}
+Router::Router() : builtPath(""), CGI(false), redirect(false), errorUrl(""), cgiPath(""), cgiQuery (""), cgiPass("") {}
 
 Router::Router(const Router& other)
 {
@@ -28,7 +28,9 @@ Router& Router::operator=(const Router& other)
         this->redirect = other.redirect;
         this->redirectUrl = other.redirectUrl;
         this->errorUrl = other.errorUrl;
-        this->cgiPath = other.cgiPath; 
+        this->cgiPath = other.cgiPath;
+        this->cgiQuery = other.cgiQuery;
+        this->cgiPass = other.cgiPass;
     }
     return (*this);
 }

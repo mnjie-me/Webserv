@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/12 13:50:26 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/21 13:08:28 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
 bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)
 {
     std::string line;
+    
     while (getline(file, line))
     {
         std::string trimmed = trim(line);

@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:15:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/17 13:26:19 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/21 13:04:28 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ class Router
         std::string errorUrl;
         std::pair<int, std::string> redirectUrl;
         std::string cgiPath;
+        std::string cgiQuery;
+        std::string cgiPass;
     
         bool handleRedirect(Request& request, const LocationConfig& loc);
         bool validateMethod(Request& request, const ServerConfig& config, const LocationConfig& loc);
@@ -49,5 +51,7 @@ class Router
         std::string getErrorUrl() const;
         std::pair<int, std::string> getredirectUrl() const;
         std::string getCgiPath() const;
+        std::string getQuery() const;
+        std::string getCgiPass() const;
         
 };

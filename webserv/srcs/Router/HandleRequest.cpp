@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/17 14:18:17 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/21 13:08:33 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ void Router::handleRequest(Request& request, const ServerConfig& config)
     builtPath = buildPath(request, *loc, matchedPath);
     CGI = isCGI(builtPath, *loc);
     if (CGI)
+    {
+        cgiPass = loc->cgiPass;
         return ;
+    }
 }
 
 const LocationConfig* ServerConfig::findLocation(const std::string& path, std::string& matchedPath) const
@@ -96,18 +99,21 @@ std::string Router::buildPath(Request& request, const LocationConfig& loc, std::
 {    
     std::string value = request.getPath().substr(matchedPath.size());
     std::string fullPath = loc.root + value;
-    cgiPath = fullPath;
     return (fullPath);
 }
 
 bool Router::isCGI(const std::string& path, const LocationConfig& loc)
 {
+    cgiPath = path;
     if (loc.cgiPass.empty())
         return (false);
-    size_t pos = path.rfind('.');
-    if (pos == std::string::npos)
+    size_t pos = path.rfind('?');
+    if (pos != std::string::npos)
+        cgiQuery = path.substr(pos + 1);
+    size_t pos1 = path.rfind('.');
+    if (pos1 == std::string::npos)
         return (false);
-    std::string value = path.substr(pos);
+    std::string value = path.substr(pos1);
     if (value == loc.cgiPass)
         return (true);
     return (false);
