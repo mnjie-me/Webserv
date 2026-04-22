@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 19:51:25 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/21 13:05:04 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/22 18:22:42 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,16 @@ std::string Router::getCgiPass() const
     return (cgiPass);
 }
 
+std::string Router::getIndexFile() const
+{
+    return (indexFile);
+}
+
+bool Router::getAutoindex() const
+{
+    return (autoindex);
+}
+
 int Response::getStatusCode() const
 {
     return (statusCode);
@@ -92,7 +102,7 @@ std::string Response::getBody() const
     return (body);
 }
 
-std::map<std::string, std::string> Response::getHeaders() const
+const std::map<std::string, std::string>& Response::getHeaders() const
 {
     return (headers);
 }

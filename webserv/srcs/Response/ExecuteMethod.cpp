@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 13:32:42 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/21 13:03:22 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/22 20:11:52 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,45 @@
 Response Method::executeMethod(const Request& request, const Router& router)
 {
     Response response;
-    
+
     if (request.getError() != 0)
-    {
-        handleError(request, router);
-    }
+        return (handleError(request, router));
     else if (router.getCGI())
-    {
-        handleCGI(request, router);
-    }
-    /*
+        return (handleCGI(request, router));
     else if (router.getRedirect())
-    {
-        handleRedirect(request)
-    } */
-    //std::cout << "<html><h1>404 Not Found</h1></html>" << std::endl;
+        return (handleRedirect(router));
+    return (handleMethod(request, router));
+}
+
+Response Method::handleRedirect(const Router& router)
+{
+    Response response;
+    std::cout << "handle redirect" << std::endl;
+    response.setStatusCode(router.getredirectUrl().first);
+    response.setHeader("Location", router.getredirectUrl().second);
     return (response);
 }
+
+Response Method::handleMethod(const Request& request, const Router& router)
+{
+    Response response;
+    
+    if (request.getMethod() == "GET")
+        return (handleGet(request, router));
+    /* else if (request.getMethod() == "POST")
+    {
+        handlePost(request, router);
+        return (response);
+    }
+    else if (request.getMethod() == "DELETE")
+    {
+        handleDelete(request, router);
+        return (response);
+    } */
+    return (response);
+}
+
+
 
 
 

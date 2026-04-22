@@ -11,6 +11,7 @@ SRCS =	srcs/main.cpp \
 		srcs/Router/Router.cpp srcs/Router/HandleRequest.cpp \
 		srcs/Response/Response.cpp srcs/Response/Method.cpp srcs/Response/ExecuteMethod.cpp \
 		srcs/Response/Errors.cpp srcs/Response/Cgi.cpp \
+		srcs/Response/Get.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 

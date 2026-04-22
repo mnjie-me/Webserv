@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 12:26:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/21 13:03:41 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/22 20:11:17 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sstream>
+#include <sys/stat.h>
+#include <dirent.h>
 
 #include "LocationConfig.hpp"
 #include "Request.hpp"
@@ -32,11 +34,14 @@ class Method
         Response handleError(const Request& request, const Router& router);
         Response handleCGI(const Request& request, const Router& router);
         Response readCgiOutput(int* fd, Response& response, pid_t pid);
-        /* void handleGet
-        void handlePost
-        void handleDelete
-        void handleCGI
-        void handleAutoindex */
+        Response handleRedirect(const Router& router);
+        Response handleMethod(const Request& request, const Router& router);
+        Response handleGet(const Request& request, const Router& router);
+        Response handlePost(const Request& request, const Router& router);
+        Response handleDelete(const Request& request, const Router& router);
+        Response handleIndex(std::string indexPath, const Router& router);
+        Response handleAutoindex(const Request& request, const Router& router);
+        std::string getContentType(const std::string& path);
         char** vecToCharArray(const std::vector<std::string>& env);
         std::string defaultErrorPage(int code);
         std::string getInterpreter(const Router& router);

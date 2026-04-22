@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:23:30 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/21 12:23:58 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/22 12:21:44 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ Response Method::handleError(const Request& request, const Router& router)
         response.setBody(defaultErrorPage(request.getError())); 
     }
     response.setHeader("Content-Type", "text/html");
-    std::cout << response.getBody() << std::endl;
     return (response);
 }
 
