@@ -1,6 +1,7 @@
 #include "client.hpp"
 #include <unistd.h>
 #include <sys/socket.h>
+#include <ctime>
 
 Client::Client() : fd(-1), shouldClose(false), lastActivity(time(NULL))  {}
 

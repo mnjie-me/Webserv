@@ -14,18 +14,21 @@
 class Server
 {
 private:
-    int                     server_fd;
+    std::vector<int> serverFds;
     std::vector<pollfd>     fds;
     std::map<int, Client>   clients;
 
-    void acceptNewClient();
+    void acceptNewClient(int serverFd);
     void handleClient(int fd);
     void removeClient(int fd);
     void handleResponse(int fd);
+    bool isServerFd(int fd) const;
 
 public:
-    Server(int port);
-    void run();
+    Server(int port); // TO REMOVE LATER!!!!!!!
+
+    // Server(std::vector<ServerConfig>& servers);
+    void run(bool& running);
     void shutdown();
 
 };

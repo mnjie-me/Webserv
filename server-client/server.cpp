@@ -3,20 +3,49 @@
 
 Server::Server(int port)
 {
-    server_fd = Socket::create(port);
+    int fd = Socket::create(port);
+    Socket::setNonBlocking(fd);
+    serverFds.push_back(fd); 
 
     pollfd pfd;
-    pfd.fd = server_fd;
+    pfd.fd = fd;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+    fds.push_back(pfd);  
+}
+
+/*Server::Server(std::vector<ServerConfig>& servers)
+{
+    for(size_t i = 0; i < servers.size(); i++)
+    {
+        int fd = Socket::create(servers[i].port);
+        Socket::setNonBlocking(fd);
+        serverFds.push_back(fd); 
+
+    pollfd pfd;
+    pfd.fd = fd;
     pfd.events = POLLIN;
     pfd.revents = 0;
     fds.push_back(pfd);
+
+    std::cout << "Listening on port " << servers[i].port << std::endl;
+    }
+}*/
+
+bool Server::isServerFd(int fd) const
+{
+    for(size_t i = 0; i < serverFds.size(); i++)
+        if(serverFds[i] == fd)
+            return (true);
+    return (false);
+
 }
 
-void Server::run()
+void Server::run(bool& run)
 {
-    while (true)
+    while (run)
     {
-        if (poll(fds.data(), fds.size(), 5000) < 0)
+        if (poll(fds.data(), fds.size(), 50000) < 0)
             continue;
 
         time_t now = time(NULL);
@@ -26,8 +55,8 @@ void Server::run()
             if (now - it->second.getLastActivity() > 30)
                 toRemove.push_back(it->first);
         }
-        std::vector<int> request;
-        std::vector<int> response;
+        std::vector<int> request_read;
+        std::vector<int> response_write;
         
         for (size_t i = 0; i < fds.size(); i++)
         {
@@ -38,9 +67,9 @@ void Server::run()
             else
             {
                 if (fds[i].revents & POLLIN)
-                    request.push_back(fds[i].fd);
+                    request_read.push_back(fds[i].fd);
                 if (fds[i].revents & POLLOUT)
-                    response.push_back(fds[i].fd);
+                    response_write.push_back(fds[i].fd);
             }
             fds[i].revents = 0;
         }
@@ -49,24 +78,25 @@ void Server::run()
             if (clients.count(toRemove[i]) > 0)
                 removeClient(toRemove[i]);
         }
-        for (size_t i = 0; i < request.size(); i++)
+        for (size_t i = 0; i < request_read.size(); i++)
         {
-            if (request[i] == server_fd)
-                acceptNewClient();
-            else if (clients.count(request[i]) > 0)
-                handleClient(request[i]);
+            if (isServerFd(request_read[i]))
+                acceptNewClient(request_read[i]);
+            else if (clients.count(request_read[i]) > 0)
+                handleClient(request_read[i]);
         }
-        for (size_t i = 0; i < response.size(); i++)
+        for (size_t i = 0; i < response_write.size(); i++)
         {
-            if (clients.count(response[i]) > 0)
-                handleResponse(response[i]);
+            if (clients.count(response_write[i]) > 0)
+                handleResponse(response_write[i]);
         }
     }
+    shutdown();
 }
 
-void Server::acceptNewClient()
+void Server::acceptNewClient(int serverFd)
 {
-    int client_fd = accept(server_fd, NULL, NULL);
+    int client_fd = accept(serverFd, NULL, NULL);
     if (client_fd < 0)
         return;
 
@@ -179,12 +209,9 @@ void Server::shutdown()
     }
     clients.clear();
 
-    if (server_fd >= 0)
-    {
-        Socket::close(server_fd);
-        server_fd = -1;
-    }
-
+    for (size_t i = 0; i < serverFds.size(); i++)
+        Socket::close(serverFds[i]);
+    serverFds.clear();
     fds.clear();
     std::cout << "Server shutdown complete." << std::endl;
 }
@@ -195,4 +222,13 @@ void Server::shutdown()
         GET / HTTP/1.1
         Host: localhost
 
+
+
+        or curl -v http://localhost:8080/
+
+
+        lsof -i :8080
+        COMMAND     PID     USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
+        a.out   1107812 iranieri    3u  IPv4 20823612      0t0  TCP *:http-alt (LISTEN)
+        kill -9 1107812
 */
