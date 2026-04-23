@@ -85,7 +85,8 @@ Response Method::handleAutoindex(const Request& request, const Router& router)
     Response response;
     std::string autoindexBody = "<html><h1>Index of " + request.getPath() + "</h1><ul>";
     DIR* dir = opendir(router.getPath().c_str());
-    
+    if (dir == NULL)
+        return (handleError(request, router)); // o construyes un 403/500 aquí
     struct dirent* entry;
     while ((entry = readdir(dir)) != NULL)
     {
@@ -96,7 +97,7 @@ Response Method::handleAutoindex(const Request& request, const Router& router)
     autoindexBody += "</ul></html>";
     response.setStatusCode(200);
     response.setBody(autoindexBody);
-    response.setHeader("Content-Type", getContentType(router.getPath()));
+    response.setHeader("Content-Type", "text/html");
     return (response);
 }
 
@@ -106,11 +107,17 @@ std::string Method::getContentType(const std::string& path)
     if (pos == std::string::npos)
         return ("text/plain");
     std::string ext = path.substr(pos);
-    if (ext == ".html") return ("text/html");
-    if (ext == ".css")  return ("text/css");
-    if (ext == ".js")   return ("application/javascript");
-    if (ext == ".jpg" || ext == ".jpeg") return ("image/jpeg");
-    if (ext == ".png")  return ("image/png");
-    if (ext == ".json") return ("application/json");
+    if (ext == ".html") 
+        return ("text/html");
+    if (ext == ".css")  
+        return ("text/css");
+    if (ext == ".js")   
+        return ("application/javascript");
+    if (ext == ".jpg" || ext == ".jpeg") 
+        return ("image/jpeg");
+    if (ext == ".png")  
+        return ("image/png");
+    if (ext == ".json") 
+        return ("application/json");
     return ("text/plain");
 }
