@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/22 18:52:29 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/26 13:03:40 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void Router::handleRequest(Request& request, const ServerConfig& config)
     builtPath = buildPath(request, *loc, matchedPath);
     indexFile = loc->index;
     autoindex = loc->autoindex;
+    uploadStore =  loc->uploadStore;
     CGI = isCGI(builtPath, *loc);
     if (CGI)
     {

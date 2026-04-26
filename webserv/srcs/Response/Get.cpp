@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 19:03:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/22 20:11:07 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/26 13:14:20 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ Response Method::handleGet(const Request& request, const Router& router)
         else
         {
             response.setStatusCode(404);
-            response.setBody(defaultErrorPage(403));
+            response.setBody(defaultErrorPage(404));
             response.setHeader("Content-Type", getContentType(router.getPath()));
             return (response);      
         }
@@ -86,7 +86,7 @@ Response Method::handleAutoindex(const Request& request, const Router& router)
     std::string autoindexBody = "<html><h1>Index of " + request.getPath() + "</h1><ul>";
     DIR* dir = opendir(router.getPath().c_str());
     if (dir == NULL)
-        return (handleError(request, router)); // o construyes un 403/500 aquí
+        return (handleError(request, router));
     struct dirent* entry;
     while ((entry = readdir(dir)) != NULL)
     {

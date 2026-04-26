@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 13:32:42 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/22 20:11:52 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/26 13:14:23 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,9 @@ Response Method::handleMethod(const Request& request, const Router& router)
     
     if (request.getMethod() == "GET")
         return (handleGet(request, router));
-    /* else if (request.getMethod() == "POST")
-    {
-        handlePost(request, router);
-        return (response);
-    }
+    else if (request.getMethod() == "POST")
+        return (handlePost(request, router));
+    /*
     else if (request.getMethod() == "DELETE")
     {
         handleDelete(request, router);
@@ -52,6 +50,7 @@ Response Method::handleMethod(const Request& request, const Router& router)
     } */
     return (response);
 }
+
 
 
 
