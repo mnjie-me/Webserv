@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 19:03:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/26 13:14:20 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/27 18:33:08 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,18 @@ Response Method::handleGet(const Request& request, const Router& router)
     }
     if (S_ISDIR(info.st_mode))
     {
-        std::string indexPath = router.getPath() + "/" + router.getIndexFile();
-        if (stat(indexPath.c_str(), &info) == 0)
-            return (handleIndex(indexPath, router));
-        else if (router.getAutoindex())
-            return (handleAutoindex(request, router));
-        else
+        if (!router.getIndexFile().empty())
         {
-            response.setStatusCode(404);
-            response.setBody(defaultErrorPage(404));
-            response.setHeader("Content-Type", getContentType(router.getPath()));
-            return (response);      
+            std::string indexPath = router.getPath() + "/" + router.getIndexFile();
+            if (stat(indexPath.c_str(), &info) == 0)
+                return (handleIndex(indexPath, router));
         }
+        if (router.getAutoindex())
+            return (handleAutoindex(request, router));
+        response.setStatusCode(403);
+        response.setBody(defaultErrorPage(403));
+        response.setHeader("Content-Type", getContentType(router.getPath()));
+        return (response);      
     }
     std::ifstream file(router.getPath().c_str());
     if (!file.is_open())
@@ -67,7 +67,6 @@ Response Method::handleIndex(std::string indexPath, const Router& router)
         response.setBody(defaultErrorPage(403));
         return (response);
     }
-
     std::string line;
     std::string content;
     while (getline(file, line))
@@ -91,6 +90,8 @@ Response Method::handleAutoindex(const Request& request, const Router& router)
     while ((entry = readdir(dir)) != NULL)
     {
         std::string name = entry->d_name;
+        if (name == "." || name == "..")
+            continue;
         autoindexBody += "<li><a href=\"" + name + "\">" + name + "</a></li>";
     }
     closedir(dir);

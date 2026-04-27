@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:18:01 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/22 12:57:37 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/27 11:59:55 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <map>
+#include <sstream>
 
 class Response
 {
@@ -36,5 +37,6 @@ class Response
 
         int getStatusCode() const;
         std::string getBody() const;
-        const std::map<std::string, std::string>& getHeaders() const;       
+        const std::map<std::string, std::string>& getHeaders() const;
+        std::string toString() const;       
 };

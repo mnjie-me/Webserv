@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 12:26:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/26 13:47:35 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/27 11:40:21 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Method
         Response handleMethod(const Request& request, const Router& router);
         Response handleGet(const Request& request, const Router& router);
         Response handlePost(const Request& request, const Router& router);
-        Response handleDelete(const Request& request, const Router& router);
+        Response handleDelete(const Router& router);
         Response handleIndex(std::string indexPath, const Router& router);
         
         Response handleAutoindex(const Request& request, const Router& router);

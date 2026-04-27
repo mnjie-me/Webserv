@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:23:30 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/22 12:21:44 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/27 18:30:40 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ std::string Method::defaultErrorPage(int code)
     switch (code)
     {
         case 400: 
-            return ("<html><h1>400 Bad Request</h1></html>"); 
+            return ("<html><h1>400 Bad Request</h1></html>");
+        case 403:
+            return ("<html><h1>403 Forbidden</h1></html>");
         case 404: 
             return ("<html><h1>404 Not Found</h1></html>");
         case 405: 

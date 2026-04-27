@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/26 13:03:40 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/27 18:08:36 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ bool Router::validateMethod(Request& request, const ServerConfig& config, const 
 std::string Router::buildPath(Request& request, const LocationConfig& loc, std::string matchedPath)
 {    
     std::string value = request.getPath().substr(matchedPath.size());
+    if (value.empty() || value[0] != '/')
+        value = "/" + value;
     std::string fullPath = loc.root + value;
     return (fullPath);
 }
