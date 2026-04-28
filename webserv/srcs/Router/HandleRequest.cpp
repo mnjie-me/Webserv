@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/27 18:08:36 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/28 19:50:38 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,12 @@ void Router::handleRequest(Request& request, const ServerConfig& config)
     std::string matchedPath;
     const LocationConfig* loc = config.findLocation(request.getPath(), matchedPath);
     std::map<int, std::string>::const_iterator it;
-    
+
+    if (request.getError() != 0)
+    {
+        saveErrorUrl(request, config);
+        return;
+    }
     if (loc == NULL)
     {
         request.setError(404);

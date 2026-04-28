@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:50:08 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/27 18:18:17 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/28 19:54:03 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int main(int ac, char **av)
             std::cerr << "Error: no servers configured" << std::endl;
             return (1);
         }
-        input.parseRequest("GET /files HTTP/1.1\r\nHost: localhost\r\n\r\n", servers[0]);
+        input.parseRequest("GET /" + std::string(8200, 'a') + " HTTP/1.1\r\nHost: localhost\r\n\r\n", servers[0]);
         route.handleRequest(input, servers[0]);
         Response response = method.executeMethod(input, route);
         std::cout << response.toString() << std::endl;

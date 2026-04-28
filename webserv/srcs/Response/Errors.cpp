@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:23:30 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/27 18:30:40 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/04/28 19:48:18 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,7 @@ Response Method::handleError(const Request& request, const Router& router)
 }
 
 std::string Method::defaultErrorPage(int code)
-{
-    
+{ 
     switch (code)
     {
         case 400: 
