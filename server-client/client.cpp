@@ -5,7 +5,35 @@
 
 Client::Client() : fd(-1), shouldClose(false), lastActivity(time(NULL))  {}
 
-Client::Client(int fd) : fd(fd), shouldClose(false), lastActivity(time(NULL)) {}
+Client::Client(int fd, const ServerConfig& config) : fd(fd), config(config), shouldClose(false), lastActivity(time(NULL)) {}
+
+Client::Client(const Client& other) 
+    : fd(other.fd), config(other.config), readBuffer(other.readBuffer),
+      writeBuffer(other.writeBuffer), addr(other.addr), 
+      lastActivity(other.lastActivity), shouldClose(other.shouldClose)
+{}
+
+Client& Client::operator=(const Client& other)
+{
+    if (this != &other)
+    {
+        fd = other.fd;
+        config = other.config;
+        readBuffer = other.readBuffer;
+        writeBuffer = other.writeBuffer;
+        addr = other.addr;
+        lastActivity = other.lastActivity;
+        shouldClose = other.shouldClose;
+    }
+    return *this;
+}
+
+Client::~Client() {}
+
+ServerConfig& Client::getConfig()
+{
+    return config;
+}
 
 int Client::getFd() const
 {
@@ -19,6 +47,8 @@ std::string& Client::getBuffer()
 
 ssize_t Client::readData()
 {
+    if(fd <0)
+        return -1;
     char temp[1024];
     ssize_t bytes = read(fd, temp, sizeof(temp));
     if (bytes > 0)
@@ -51,7 +81,7 @@ void Client::appendToSendBuffer(const std::string& data)
 
 ssize_t Client::drainSendBuffer()
 {
-    if (writeBuffer.empty()) 
+    if (fd < 0 || writeBuffer.empty()) 
     {
         return 0;
     }

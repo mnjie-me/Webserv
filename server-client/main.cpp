@@ -1,11 +1,8 @@
-
 #include "server.hpp"
-#include <csignal> 
-#include <cstdlib>
-
-#include "server.hpp"
+#include "ServerConfig.hpp"
 #include <csignal>
 #include <iostream>
+#include <vector>
 
 static bool g_running = true;
 
@@ -22,7 +19,15 @@ int main()
 
     try
     {
-        Server server(8080);
+        // Creamos el config manualmente sin parsear archivo
+        ServerConfig config;
+        config.port = 8080;
+        config.serverName = "localhost";
+
+        std::vector<ServerConfig> servers;
+        servers.push_back(config);
+
+        Server server(servers);
         server.run(g_running);
     }
     catch (std::exception& e)

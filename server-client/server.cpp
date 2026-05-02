@@ -1,26 +1,12 @@
 #include "server.hpp"
 
-
-Server::Server(int port)
-{
-    int fd = Socket::create(port);
-    Socket::setNonBlocking(fd);
-    serverFds.push_back(fd); 
-
-    pollfd pfd;
-    pfd.fd = fd;
-    pfd.events = POLLIN;
-    pfd.revents = 0;
-    fds.push_back(pfd);  
-}
-
-/*Server::Server(std::vector<ServerConfig>& servers)
+Server::Server(std::vector<ServerConfig>& servers)
 {
     for(size_t i = 0; i < servers.size(); i++)
     {
         int fd = Socket::create(servers[i].port);
         Socket::setNonBlocking(fd);
-        serverFds.push_back(fd); 
+        serverMap[fd] = servers[i]; 
 
     pollfd pfd;
     pfd.fd = fd;
@@ -30,15 +16,28 @@ Server::Server(int port)
 
     std::cout << "Listening on port " << servers[i].port << std::endl;
     }
-}*/
+}
+
+Server::Server(const Server& other)
+    : serverMap(other.serverMap),
+      clients(other.clients),
+      fds(other.fds)
+{}
+
+Server& Server::operator=(const Server& other)
+{
+    if (this != &other)
+    {
+        serverMap = other.serverMap;
+        clients = other.clients;
+        fds = other.fds;
+    }
+    return *this;
+}
 
 bool Server::isServerFd(int fd) const
 {
-    for(size_t i = 0; i < serverFds.size(); i++)
-        if(serverFds[i] == fd)
-            return (true);
-    return (false);
-
+    return (serverMap.count(fd) > 0);
 }
 
 void Server::run(bool& run)
@@ -108,7 +107,8 @@ void Server::acceptNewClient(int serverFd)
     pfd.revents = 0;
     fds.push_back(pfd);
 
-    clients[client_fd] = Client(client_fd);
+    clients[client_fd] = Client(client_fd, serverMap[serverFd]);
+
     std::cout << "New client connected: " << client_fd << std::endl;
 }
 
@@ -119,14 +119,13 @@ void Server::handleResponse(int fd)
     ssize_t sent = client.drainSendBuffer();
     if (sent < 0)
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-            return;
         removeClient(fd);
         return;
     }
 
     if (!client.hasPendingData())
     {
+        std::cout << "Response fd=" << fd << " sent" << std::endl;
         if (client.shouldClose)
         {
             removeClient(fd);
@@ -146,9 +145,13 @@ void Server::handleResponse(int fd)
 
 void Server::handleClient(int fd)
 {
+
+    Client& client = clients[fd];
+    ServerConfig& config = client.getConfig();    
+
+    std::cout << "Client using port: " << config.port << std::endl;
     ssize_t bytes = clients[fd].readData();
 
-    
     if (bytes == 0)
     {
         removeClient(fd);
@@ -156,21 +159,22 @@ void Server::handleClient(int fd)
     }
     if (bytes < 0)  
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-            return;  
         removeClient(fd);
         return;
     }
 
-    if (clients[fd].isRequestComplete())
+    if (client.isRequestComplete())
     {
-        std::string buffer = clients[fd].getBuffer();
+        std::string buffer = client.getBuffer();
         bool shouldClose = (buffer.find("Connection: close") != std::string::npos);
 
+        std::string firstLine = buffer.substr(0, buffer.find("\r\n"));
+        std::cout << "Request  fd=" << fd << " [" << firstLine << "]" << std::endl;
+
         std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nHello";
-        clients[fd].appendToSendBuffer(response);
-        clients[fd].shouldClose = shouldClose;  
-        clients[fd].resetBuffer();
+        client.appendToSendBuffer(response);
+        client.shouldClose = shouldClose;  
+        client.resetBuffer();
         
         for (size_t i = 0; i < fds.size(); i++)
         {
@@ -209,13 +213,18 @@ void Server::shutdown()
     }
     clients.clear();
 
-    for (size_t i = 0; i < serverFds.size(); i++)
-        Socket::close(serverFds[i]);
-    serverFds.clear();
+    for (std::map<int, ServerConfig>::iterator it = serverMap.begin(); it != serverMap.end(); ++it)
+    {
+        Socket::close(it->first);
+    }
+    serverMap.clear();
     fds.clear();
     std::cout << "Server shutdown complete." << std::endl;
 }
-
+Server::~Server()
+{
+    shutdown();
+}
 /*   -------TO TEST!!-------
 
         nc localhost 8080

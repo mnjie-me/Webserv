@@ -7,16 +7,16 @@
 #include <string>
 
 #include <poll.h>
-
+#include "ServerConfig.hpp"
 #include "socket.hpp"
 #include "client.hpp"
 
 class Server
 {
 private:
-    std::vector<int> serverFds;
-    std::vector<pollfd>     fds;
+    std::map<int, ServerConfig> serverMap;
     std::map<int, Client>   clients;
+    std::vector<pollfd>     fds;
 
     void acceptNewClient(int serverFd);
     void handleClient(int fd);
@@ -25,12 +25,12 @@ private:
     bool isServerFd(int fd) const;
 
 public:
-    Server(int port); // TO REMOVE LATER!!!!!!!
-
-    // Server(std::vector<ServerConfig>& servers);
+    Server(std::vector<ServerConfig>& servers);
+    Server(const Server& other);
+    Server& operator=(const Server& other);
     void run(bool& running);
     void shutdown();
-
+    ~Server();
 };
 
 #endif

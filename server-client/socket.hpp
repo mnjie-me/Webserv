@@ -3,10 +3,10 @@
 
 class Socket
 {
-public:
-    static int  create(int port);
-    static void setNonBlocking(int fd);
-    static void close(int fd);
+    public:
+        static int  create(int port);
+        static void setNonBlocking(int fd);
+        static void close(int fd);
 };
 
 #endif

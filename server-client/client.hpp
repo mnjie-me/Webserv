@@ -4,11 +4,14 @@
 #include <string>
 #include <netinet/in.h>
 
+#include "ServerConfig.hpp"
+
 
 class Client 
 {
 private:
     int fd;
+    ServerConfig config;
     std::string readBuffer;
     std::string writeBuffer;
     sockaddr_in addr;
@@ -17,7 +20,11 @@ private:
 public:
     bool        shouldClose;
     Client();
-    Client(int fd);
+    Client(int fd, const ServerConfig& config);
+    Client(const Client& other);             
+    Client& operator=(const Client& other);
+    ~Client();
+    ServerConfig& getConfig();
 
     int getFd() const;
     std::string& getBuffer();
