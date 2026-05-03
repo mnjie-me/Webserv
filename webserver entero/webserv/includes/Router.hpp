@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:15:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/26 13:04:24 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/03 23:38:22 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ class Router
         bool validateMethod(Request& request, const ServerConfig& config, const LocationConfig& loc);
         std::string buildPath(Request& request, const LocationConfig& loc, std::string matchedPath);
         bool isCGI(const std::string& path, const LocationConfig& loc);
-        void saveErrorUrl(Request& request, const ServerConfig& config);
 
         
     public:
@@ -58,5 +57,7 @@ class Router
         std::string getCgiPass() const;
         std::string getIndexFile() const;
         std::string getUploadStore() const;
-        bool getAutoindex() const;       
+        bool getAutoindex() const;
+        void saveErrorUrl(Request& request, const ServerConfig& config);
+      
 };

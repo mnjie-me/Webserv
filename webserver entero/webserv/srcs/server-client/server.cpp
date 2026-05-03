@@ -48,7 +48,7 @@ bool Server::isServerFd(int fd) const
     return (serverMap.count(fd) > 0);
 }
 
-void Server::run(bool& run, std::vector<ServerConfig> servers)
+void Server::run(bool& run)
 {
     while (run)
     {
@@ -90,7 +90,7 @@ void Server::run(bool& run, std::vector<ServerConfig> servers)
             if (isServerFd(request_read[i]))
                 acceptNewClient(request_read[i]);
             else if (clients.count(request_read[i]) > 0)
-                handleClient(request_read[i], servers);
+                handleClient(request_read[i]);
         }
         for (size_t i = 0; i < response_write.size(); i++)
         {
@@ -151,7 +151,7 @@ void Server::handleResponse(int fd)
 }
 
 
-void Server::handleClient(int fd, std::vector<ServerConfig> servers)
+void Server::handleClient(int fd)
 {
 
     Client& client = clients[fd];
@@ -183,13 +183,8 @@ void Server::handleClient(int fd, std::vector<ServerConfig> servers)
         Router  route;
         Method method;
         Request input;
-        unsigned long i = 0;
-        while (i < servers.size())
-        {
-            input.parseRequest(client.getBuffer(), servers[i]);
-            route.handleRequest(input, servers[i]);
-            i++;
-        }
+        input.parseRequest(client.getBuffer(), config);
+        route.handleRequest(input, config);
         Response response = method.executeMethod(input, route);
         client.appendToSendBuffer(response.toString());
         client.shouldClose = shouldClose;  

@@ -19,7 +19,7 @@ private:
     std::vector<pollfd>     fds;
 
     void acceptNewClient(int serverFd);
-    void handleClient(int fd, std::vector<ServerConfig> servers);
+    void handleClient(int fd);
     void removeClient(int fd);
     void handleResponse(int fd);
     bool isServerFd(int fd) const;
@@ -28,7 +28,7 @@ public:
     Server(std::vector<ServerConfig>& servers);
     Server(const Server& other);
     Server& operator=(const Server& other);
-    void run(bool& running, std::vector<ServerConfig> servers);
+    void run(bool& running);
     void shutdown();
     ~Server();
 };

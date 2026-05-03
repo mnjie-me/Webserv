@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iranieri <iranieri@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:50:08 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/02 17:14:48 by iranieri         ###   ########.fr       */
+/*   Updated: 2026/05/03 23:41:37 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int main(int ac, char **av)
         }
         //servers.push_back(config);
         Server server(servers);
-        server.run(g_running, servers);
+        server.run(g_running);
         
         /* Client client;
         unsigned long i = 0;
