@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseConfig.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iranieri <iranieri@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/02 15:49:27 by iranieri         ###   ########.fr       */
+/*   Updated: 2026/05/04 14:25:44 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,23 @@ void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
             std::cerr << "Error: unexpected token " << trimmed << std::endl;
             return ;
         }
+    }
+    size_t i = 0;
+    while (i < servers.size())
+    {
+        size_t j = i + 1;
+        while (j < servers.size())
+        {
+            if (servers[i].port == servers[j].port)
+            {
+                std::cerr << "Error: duplicate port " << servers[i].port << std::endl;
+                servers.clear();
+                file.close();
+                return;
+            }
+            j++;
+        }
+        i++;
     }
     file.close();
     if (servers.empty())

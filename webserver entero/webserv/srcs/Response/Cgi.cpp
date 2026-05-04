@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:25:10 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 13:08:33 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 20:07:32 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@ Response Method::handleCGI(const Request& request, const Router& router)
 {
     Response response;
     int fd[2];
+    int stdinFd[2];
 
-    if (pipe(fd) == -1)
+    if (pipe(fd) == -1 || pipe(stdinFd) == -1)
     {
         response.setStatusCode(500);
         response.setBody(defaultErrorPage(500));
@@ -36,8 +37,11 @@ Response Method::handleCGI(const Request& request, const Router& router)
         dup2(fd[1], STDOUT_FILENO);
         close(fd[1]);
 
-        std::vector<std::string> env;
+        dup2(stdinFd[0], STDIN_FILENO);
+        close(stdinFd[0]);
+        close(stdinFd[1]);
 
+        std::vector<std::string> env;
         env.push_back("REQUEST_METHOD=" + request.getMethod());
         env.push_back("SCRIPT_FILENAME=" + router.getCgiPath()); 
         env.push_back("SERVER_PROTOCOL=HTTP/1.1");
@@ -55,11 +59,7 @@ Response Method::handleCGI(const Request& request, const Router& router)
         std::string script = router.getCgiPath();
         std::string interpreter = getInterpreter(router);
         if (interpreter.empty())
-        {
-            response.setStatusCode(500);
-            response.setBody(defaultErrorPage(500));
-            exit (1);
-        }        
+            exit(1);
         char* argv[] = {
             (char*)interpreter.c_str(),
             (char*)script.c_str(),
@@ -69,12 +69,17 @@ Response Method::handleCGI(const Request& request, const Router& router)
         size_t i = 0;
         while (envp[i])
         {
-            delete(envp[i]);
+            delete[] envp[i];
             i++;
         }
-        delete(envp);
+        delete[] envp;
         exit(1);
     }
+    close(stdinFd[0]);
+    if (!request.getBody().empty())
+        write(stdinFd[1], request.getBody().c_str(), request.getBody().size());
+    close(stdinFd[1]);
+
     response = readCgiOutput(fd, response, pid);
     return (response);
 }
@@ -94,7 +99,6 @@ Response Method::readCgiOutput(int* fd, Response& response, pid_t pid)
     int status;
     
     waitpid(pid, &status, 0);
-    //std::cerr << "output: " << output << std::endl;
     if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
     {
         response.setStatusCode(500);
