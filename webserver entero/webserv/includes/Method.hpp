@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 12:26:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/27 11:40:21 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 14:07:42 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,13 @@ class Method
         Response handleGet(const Request& request, const Router& router);
         Response handlePost(const Request& request, const Router& router);
         Response handleDelete(const Router& router);
-        Response handleIndex(std::string indexPath, const Router& router);
+        Response handleIndex(std::string indexPath);
         
         Response handleAutoindex(const Request& request, const Router& router);
         std::string getContentType(const std::string& path);
         char** vecToCharArray(const std::vector<std::string>& env);
         std::string defaultErrorPage(int code);
+        Response buildError(int code, const Router& router);
         std::string getInterpreter(const Router& router);
         std::string createFileName();
 

@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:25:10 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/21 13:15:13 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 13:08:33 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,6 @@ Response Method::handleCGI(const Request& request, const Router& router)
             (char*)script.c_str(),
             NULL
         };
-        /* std::cerr << "interpreter: " << interpreter << std::endl;
-        std::cerr << "script: " << router.getCgiPath() << std::endl;
-        execve(argv[0], argv, envp);
-        std::cerr << "execve failed" << std::endl; */
-        exit(1);
         execve(argv[0], argv, envp);
         size_t i = 0;
         while (envp[i])

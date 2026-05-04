@@ -61,11 +61,21 @@ ssize_t Client::readData()
 
 bool Client::isRequestComplete() const
 {
-    if (readBuffer.find("\r\n\r\n") != std::string::npos)
-        return (1);
-    else if (readBuffer.find("\n\n") != std::string::npos)
-        return (1);
-    return (0);
+    size_t pos = readBuffer.find("\r\n\r\n");
+    if (pos == std::string::npos)
+        pos = readBuffer.find("\n\n");
+    if (pos == std::string::npos)
+        return (false);
+    size_t clPos = readBuffer.find("Content-Length: ");
+    if (clPos == std::string::npos)
+        return (true);
+    size_t valueStart = clPos + 16;
+    size_t valueEnd = readBuffer.find("\r\n", valueStart);
+    std::string clValue = readBuffer.substr(valueStart, valueEnd - valueStart);
+    size_t contentLength = std::atoi(clValue.c_str());
+    size_t headerEnd = pos + 4;
+    size_t bodyReceived = readBuffer.size() - headerEnd;
+    return (bodyReceived >= contentLength);
 }
 
 void Client::resetBuffer()

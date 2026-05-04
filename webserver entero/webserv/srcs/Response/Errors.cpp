@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:23:30 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/28 19:48:18 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 14:08:41 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,32 @@
 
 Response Method::handleError(const Request& request, const Router& router)
 {
+    return buildError(request.getError(), router);
+}
+
+Response Method::buildError(int code, const Router& router)
+{
     Response response;
-    
-    response.setStatusCode(request.getError());
-    if (!router.getErrorUrl().empty())
+    response.setStatusCode(code);
+    std::map<int, std::string> errorPages = router.getErrorPages();
+    std::map<int, std::string>::iterator it = errorPages.find(code);
+    if (it != errorPages.end())
     {
-        std::ifstream file(router.getErrorUrl().c_str());
-        std::string   line;
-        std::string   buf;
-        if (!file.is_open())
-            response.setBody(defaultErrorPage(request.getError()));
-        else
+        std::ifstream file(it->second.c_str());
+        std::string line, buf;
+        if (file.is_open())
         {
             while (std::getline(file, line))
-                buf = line + '\n';
+                buf += line + '\n';
+            file.close();
+            response.setBody(buf);
+            response.setHeader("Content-Type", "text/html");
+            return response;
         }
-        file.close();
     }
-    else
-    {
-        response.setBody(defaultErrorPage(request.getError())); 
-    }
+    response.setBody(defaultErrorPage(code));
     response.setHeader("Content-Type", "text/html");
-    return (response);
+    return response;
 }
 
 std::string Method::defaultErrorPage(int code)

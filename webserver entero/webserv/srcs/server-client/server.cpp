@@ -157,9 +157,11 @@ void Server::handleClient(int fd)
     Client& client = clients[fd];
     ServerConfig& config = client.getConfig();    
 
-    std::cout << "Client using port: " << config.port << std::endl;
+    //std::cout << "Client using port: " << config.port << std::endl;
 
     ssize_t bytes = clients[fd].readData();
+    std::cout << "[READ] fd=" << fd << " bytes=" << bytes << std::endl;
+
 
     if (bytes == 0)
     {
@@ -186,6 +188,7 @@ void Server::handleClient(int fd)
         input.parseRequest(client.getBuffer(), config);
         route.handleRequest(input, config);
         Response response = method.executeMethod(input, route);
+        std::cerr << "status: " << response.getStatusCode() << std::endl;
         client.appendToSendBuffer(response.toString());
         client.shouldClose = shouldClose;  
         client.resetBuffer();

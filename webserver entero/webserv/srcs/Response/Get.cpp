@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 19:03:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/27 18:33:08 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 14:07:35 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,45 +18,32 @@ Response Method::handleGet(const Request& request, const Router& router)
     struct stat info;
 
     if (stat(router.getPath().c_str(), &info) != 0)
-    {
-        response.setStatusCode(404);
-        response.setBody(defaultErrorPage(404));
-        response.setHeader("Content-Type", getContentType(router.getPath()));
-        return (response);
-    }
+        return buildError(404, router);
     if (S_ISDIR(info.st_mode))
     {
         if (!router.getIndexFile().empty())
         {
             std::string indexPath = router.getPath() + "/" + router.getIndexFile();
             if (stat(indexPath.c_str(), &info) == 0)
-                return (handleIndex(indexPath, router));
+                return handleIndex(indexPath);
         }
         if (router.getAutoindex())
-            return (handleAutoindex(request, router));
-        response.setStatusCode(403);
-        response.setBody(defaultErrorPage(403));
-        response.setHeader("Content-Type", getContentType(router.getPath()));
-        return (response);      
+            return handleAutoindex(request, router);
+        return buildError(403, router);
     }
-    std::ifstream file(router.getPath().c_str());
+    std::ifstream file(router.getPath().c_str(), std::ios::binary);
     if (!file.is_open())
-    {
-        response.setStatusCode(403);
-        response.setBody(defaultErrorPage(403));
-        response.setHeader("Content-Type", getContentType(router.getPath()));
-        return (response);
-    }
+        return buildError(403, router);
     std::string content((std::istreambuf_iterator<char>(file)),
                         std::istreambuf_iterator<char>());
     file.close();
     response.setStatusCode(200);
     response.setBody(content);
     response.setHeader("Content-Type", getContentType(router.getPath()));
-    return (response);
+    return response;
 }
 
-Response Method::handleIndex(std::string indexPath, const Router& router)
+Response Method::handleIndex(std::string indexPath)
 {
     Response response;
     std::ifstream file(indexPath.c_str());
@@ -75,7 +62,7 @@ Response Method::handleIndex(std::string indexPath, const Router& router)
     }
     response.setStatusCode(200);
     response.setBody(content);
-    response.setHeader("Content-Type", getContentType(router.getPath()));
+    response.setHeader("Content-Type", getContentType(indexPath));
     return (response);
 }
 
@@ -92,7 +79,7 @@ Response Method::handleAutoindex(const Request& request, const Router& router)
         std::string name = entry->d_name;
         if (name == "." || name == "..")
             continue;
-        autoindexBody += "<li><a href=\"" + name + "\">" + name + "</a></li>";
+        autoindexBody += "<li><a href=\"" + request.getPath() + "/" + name + "\">" + name + "</a></li>";
     }
     closedir(dir);
     autoindexBody += "</ul></html>";

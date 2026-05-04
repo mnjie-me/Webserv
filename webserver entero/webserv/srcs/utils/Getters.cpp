@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 19:51:25 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/26 13:04:56 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 13:47:29 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,11 @@ std::string Router::getUploadStore() const
 bool Router::getAutoindex() const
 {
     return (autoindex);
+}
+
+std::map<int, std::string> Router::getErrorPages() const
+{
+    return (errorPages);
 }
 
 int Response::getStatusCode() const
