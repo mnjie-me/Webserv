@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:25:10 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 20:07:32 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 20:39:29 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ Response Method::handleCGI(const Request& request, const Router& router)
         env.push_back("SCRIPT_FILENAME=" + router.getCgiPath()); 
         env.push_back("SERVER_PROTOCOL=HTTP/1.1");
         env.push_back("QUERY_STRING=" + router.getQuery());
+        env.push_back("REDIRECT_STATUS=200");
+        env.push_back("CONTENT_TYPE=application/x-www-form-urlencoded");
         if (!request.getBody().empty())
         {
             std::stringstream ss;
