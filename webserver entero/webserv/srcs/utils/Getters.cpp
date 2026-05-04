@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/14 19:51:25 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 13:47:29 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 14:18:28 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,6 @@ bool Router::getCGI()const
 bool Router::getRedirect()const
 {
     return (redirect);
-}
-
-std::string Router::getErrorUrl() const
-{
-    return (errorUrl);
 }
 
 std::pair<int, std::string> Router::getredirectUrl() const

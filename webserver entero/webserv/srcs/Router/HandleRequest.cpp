@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 13:46:57 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 14:20:58 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,16 @@ void Router::handleRequest(Request& request, const ServerConfig& config)
     std::map<int, std::string>::const_iterator it;
 
     if (request.getError() != 0)
-    {
-        saveErrorUrl(request, config);
         return;
-    }
     if (loc == NULL)
     {
         request.setError(404);
-        saveErrorUrl(request, config);
         return ;
     }
     redirect = handleRedirect(request, *loc);
     if (redirect)
         return ;
-    if (!validateMethod(request, config, *loc))
+    if (!validateMethod(request, *loc))
         return ;
     builtPath = buildPath(request, *loc, matchedPath);
     indexFile = loc->index;
@@ -68,14 +64,6 @@ const LocationConfig* ServerConfig::findLocation(const std::string& path, std::s
     return (bestLoc);
 }
 
-void Router::saveErrorUrl(Request& request, const ServerConfig& config)
-{
-    std::map<int, std::string>::const_iterator it;
-    
-    it = config.errorPages.find(request.getError());
-    if (it != config.errorPages.end())
-        errorUrl = it->second;
-}
 
 bool Router::handleRedirect(Request& request, const LocationConfig& loc)
 {
@@ -88,7 +76,7 @@ bool Router::handleRedirect(Request& request, const LocationConfig& loc)
 }
 
 
-bool Router::validateMethod(Request& request, const ServerConfig& config, const LocationConfig& loc)
+bool Router::validateMethod(Request& request, const LocationConfig& loc)
 {
     if (loc.methods.empty())
         return (true);
@@ -101,7 +89,6 @@ bool Router::validateMethod(Request& request, const ServerConfig& config, const 
         i++;
     }
     request.setError(405);
-    saveErrorUrl(request, config);
     return (false);
 }
 

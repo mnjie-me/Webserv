@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:15:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 13:47:45 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/04 14:19:59 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ class Router
         std::string builtPath;
         bool        CGI;
         bool        redirect;
-        std::string errorUrl;
         std::pair<int, std::string> redirectUrl;
         std::string cgiPath;
         std::string cgiQuery;
@@ -34,7 +33,7 @@ class Router
         std::map<int, std::string> errorPages;
     
         bool handleRedirect(Request& request, const LocationConfig& loc);
-        bool validateMethod(Request& request, const ServerConfig& config, const LocationConfig& loc);
+        bool validateMethod(Request& request, const LocationConfig& loc);
         std::string buildPath(Request& request, const LocationConfig& loc, std::string matchedPath);
         bool isCGI(const std::string& path, const LocationConfig& loc);
 
@@ -51,7 +50,6 @@ class Router
         std::string getPath()const;
         bool getCGI()const;
         bool getRedirect()const;
-        std::string getErrorUrl() const;
         std::pair<int, std::string> getredirectUrl() const;
         std::string getCgiPath() const;
         std::string getQuery() const;
@@ -59,6 +57,5 @@ class Router
         std::string getIndexFile() const;
         std::string getUploadStore() const;
         bool getAutoindex() const;
-        void saveErrorUrl(Request& request, const ServerConfig& config);
         std::map<int, std::string> getErrorPages() const;
 };
