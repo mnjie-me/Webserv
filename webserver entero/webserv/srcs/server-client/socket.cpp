@@ -25,13 +25,8 @@ int Socket::create(int port)
     addr.sin_port = htons(port);
     addr.sin_addr.s_addr = INADDR_ANY;
 
-    std::cout << addr.sin_family << std::endl;
-std::cout << "Puerto: " << ntohs(addr.sin_port) << std::endl;
-    std::cout << addr.sin_addr.s_addr << std::endl;
-
     if (bind(fd, (sockaddr*)&addr, sizeof(addr)) < 0)
-       //throw std::runtime_error("bind failed");
-    throw std::runtime_error(std::string("bind failed: ") + strerror(errno));
+        throw std::runtime_error(std::string("bind failed: ") + strerror(errno));
 
     if (listen(fd, 10) < 0)
         throw std::runtime_error("listen failed");

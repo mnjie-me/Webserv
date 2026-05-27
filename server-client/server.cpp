@@ -97,7 +97,10 @@ void Server::acceptNewClient(int serverFd)
 {
     int client_fd = accept(serverFd, NULL, NULL);
     if (client_fd < 0)
+    {
+        std::cout << "accept failed" << std::endl;
         return;
+    }
 
     Socket::setNonBlocking(client_fd);
 

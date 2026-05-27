@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
+/*   By: iranieri <iranieri@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:50:08 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/03 23:41:37 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/27 19:40:56 by iranieri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,13 @@ void signal_handler(int signum)
 int main(int ac, char **av)
 
 {
-    if (ac == 2)
+    if (ac != 2)
+    {
+        std::cerr << "Usage: " << av[0] << " <config_file>" << std::endl;
+        return (1);
+    }
+
+    try
     {
         Request input;
         ServerConfig config;
@@ -92,10 +98,11 @@ int main(int ac, char **av)
         }
         return (0); */
     }
-    else
+    catch (const std::exception& e)
     {
-        std::cerr << "Error: missing congigure file" << std::endl;
+        std::cerr << "Fatal: " << e.what() << std::endl;
         return (1);
     }
+
     return (0);    
 }

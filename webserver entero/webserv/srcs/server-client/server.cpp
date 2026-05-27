@@ -52,11 +52,17 @@ void Server::run(bool& run)
 {
     while (run)
     {
-        if (poll(fds.data(), fds.size(), 50000) < 0)
-            continue;
+        /*if (poll(fds.data(), fds.size(), 50000) < 0)
+            continue;*/
+        int ret = poll(fds.data(), fds.size(), 1000);
 
+        if (ret < 0)
+        continue;
+
+    
         time_t now = time(NULL);
         std::vector<int> toRemove;
+        std::vector<int> readyServerFds;
         for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it)
         {
             if (now - it->second.getLastActivity() > 30)
@@ -71,31 +77,41 @@ void Server::run(bool& run)
             {
                 toRemove.push_back(fds[i].fd);
             }
-            else
+            if (fds[i].revents & POLLIN)
             {
-                if (fds[i].revents & POLLIN)
-                    request_read.push_back(fds[i].fd);
-                if (fds[i].revents & POLLOUT)
-                    response_write.push_back(fds[i].fd);
+                if (isServerFd(fds[i].fd))
+                {
+                    readyServerFds.push_back(fds[i].fd);
+                }
+                else
+                {
+                    request_read.push_back(fds[i].fd); 
+                }
+            }
+
+            if (fds[i].revents & POLLOUT)
+            {
+                response_write.push_back(fds[i].fd);
             }
             fds[i].revents = 0;
         }
-        for (size_t i = 0; i < toRemove.size(); i++)
-        {
-            if (clients.count(toRemove[i]) > 0)
-                removeClient(toRemove[i]);
-        }
+        for (size_t i = 0; i < readyServerFds.size(); i++)
+            acceptNewClient(readyServerFds[i]);
+
         for (size_t i = 0; i < request_read.size(); i++)
         {
-            if (isServerFd(request_read[i]))
-                acceptNewClient(request_read[i]);
-            else if (clients.count(request_read[i]) > 0)
+            if (clients.count(request_read[i]) > 0)
                 handleClient(request_read[i]);
         }
         for (size_t i = 0; i < response_write.size(); i++)
         {
             if (clients.count(response_write[i]) > 0)
                 handleResponse(response_write[i]);
+        }
+        for (size_t i = 0; i < toRemove.size(); i++)
+        {
+            if (clients.count(toRemove[i]) > 0)
+                removeClient(toRemove[i]);
         }
     }
     shutdown();
@@ -122,30 +138,34 @@ void Server::acceptNewClient(int serverFd)
 
 void Server::handleResponse(int fd)
 {
-    Client& client = clients[fd];
+    if (clients.count(fd) == 0) return;
+        Client& client = clients[fd];
     
     ssize_t sent = client.drainSendBuffer();
-    if (sent < 0)
+    if (sent <= 0)
     {
         removeClient(fd);
         return;
     }
 
-    if (!client.hasPendingData())
+    if (client.hasPendingData())
+        return;
+    
+    std::cout << "Response sent to client: " << fd << std::endl;
+
+    if(client.shouldClose)
     {
-        std::cout << "Response fd=" << fd << " sent" << std::endl;
-        if (client.shouldClose)
+        removeClient(fd);
+        return;
+    }
+
+
+    for (size_t i = 0; i < fds.size(); i++)
+    {
+        if (fds[i].fd == fd)
         {
-            removeClient(fd);
-            return;
-        }
-        for (size_t i = 0; i < fds.size(); i++)
-        {
-            if (fds[i].fd == fd)
-            {
-                fds[i].events = POLLIN;
-                break;
-            }
+            fds[i].events = POLLIN;
+            break;
         }
     }
 }
@@ -153,7 +173,9 @@ void Server::handleResponse(int fd)
 
 void Server::handleClient(int fd)
 {
-
+    if (clients.count(fd) == 0)
+        return;
+    
     Client& client = clients[fd];
     ServerConfig& config = client.getConfig();    
 
@@ -197,7 +219,10 @@ void Server::handleClient(int fd)
         {
             if (fds[i].fd == fd)
             {
-                fds[i].events = POLLIN | POLLOUT;
+                if (client.hasPendingData())
+                    fds[i].events = POLLIN | POLLOUT;
+                else
+                    fds[i].events = POLLIN;
                 break;
             }
         }
