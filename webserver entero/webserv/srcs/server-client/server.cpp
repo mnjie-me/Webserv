@@ -16,13 +16,13 @@ Server::Server(std::vector<ServerConfig>& servers)
         Socket::setNonBlocking(fd);
         serverMap[fd] = servers[i]; 
 
-    pollfd pfd;
-    pfd.fd = fd;
-    pfd.events = POLLIN;
-    pfd.revents = 0;
-    fds.push_back(pfd);
+        pollfd pfd;
+        pfd.fd = fd;
+        pfd.events = POLLIN;
+        pfd.revents = 0;
+        fds.push_back(pfd);
 
-    std::cout << "Listening on port " << servers[i].port << std::endl;
+        std::cout << "Listening on port " << servers[i].port << std::endl;
     }
 }
 
