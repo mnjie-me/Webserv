@@ -52,14 +52,11 @@ void Server::run(bool& run)
 {
     while (run)
     {
-        /*if (poll(fds.data(), fds.size(), 50000) < 0)
-            continue;*/
         int ret = poll(fds.data(), fds.size(), 1000);
 
         if (ret < 0)
         continue;
 
-    
         time_t now = time(NULL);
         std::vector<int> toRemove;
         std::vector<int> readyServerFds;
@@ -107,6 +104,23 @@ void Server::run(bool& run)
         {
             if (clients.count(response_write[i]) > 0)
                 handleResponse(response_write[i]);
+        }                                    
+        for (std::map<int, Client>::iterator it = clients.begin(); it != clients.end(); ++it)
+        {
+            int fd = it->first;
+            Client& client = it->second;
+            
+            for (size_t i = 0; i < fds.size(); i++)
+            {
+                if (fds[i].fd == fd)
+                {
+                    if (client.hasPendingData())
+                        fds[i].events = POLLIN | POLLOUT;
+                    else
+                        fds[i].events = POLLIN;
+                    break;
+                }
+            }
         }
         for (size_t i = 0; i < toRemove.size(); i++)
         {
@@ -142,7 +156,12 @@ void Server::handleResponse(int fd)
         Client& client = clients[fd];
     
     ssize_t sent = client.drainSendBuffer();
-    if (sent <= 0)
+    if (sent == -1)
+    {
+        removeClient(fd);
+        return;
+    }
+    if (sent <0)
     {
         removeClient(fd);
         return;
@@ -158,16 +177,6 @@ void Server::handleResponse(int fd)
         removeClient(fd);
         return;
     }
-
-
-    for (size_t i = 0; i < fds.size(); i++)
-    {
-        if (fds[i].fd == fd)
-        {
-            fds[i].events = POLLIN;
-            break;
-        }
-    }
 }
 
 
@@ -179,8 +188,6 @@ void Server::handleClient(int fd)
     Client& client = clients[fd];
     ServerConfig& config = client.getConfig();    
 
-    //std::cout << "Client using port: " << config.port << std::endl;
-
     ssize_t bytes = clients[fd].readData();
     std::cout << "[READ] fd=" << fd << " bytes=" << bytes << std::endl;
 
@@ -190,7 +197,7 @@ void Server::handleClient(int fd)
         removeClient(fd);
         return;
     }
-    if (bytes < 0)  
+    if (bytes == -1)  
     {
         removeClient(fd);
         return;
@@ -214,18 +221,6 @@ void Server::handleClient(int fd)
         client.appendToSendBuffer(response.toString());
         client.shouldClose = shouldClose;  
         client.resetBuffer();
-        
-        for (size_t i = 0; i < fds.size(); i++)
-        {
-            if (fds[i].fd == fd)
-            {
-                if (client.hasPendingData())
-                    fds[i].events = POLLIN | POLLOUT;
-                else
-                    fds[i].events = POLLIN;
-                break;
-            }
-        }
     }
 }
 
