@@ -262,19 +262,3 @@ Server::~Server()
 {
     shutdown();
 }
-/*   -------TO TEST!!-------
-
-        nc localhost 8080
-        GET / HTTP/1.1
-        Host: localhost
-
-
-
-        or curl -v http://localhost:8080/
-
-
-        lsof -i :8080
-        COMMAND     PID     USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
-        a.out   1107812 iranieri    3u  IPv4 20823612      0t0  TCP *:http-alt (LISTEN)
-        kill -9 1107812
-*/
