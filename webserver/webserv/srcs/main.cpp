@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: iranieri <iranieri@student.42madrid.com    +#+  +:+       +#+        */
+/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:50:08 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/27 19:40:56 by iranieri         ###   ########.fr       */
+/*   Updated: 2026/05/29 16:13:41 by mnjie-me         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,33 +29,6 @@ void signal_handler(int signum)
     g_running = false;
 }
 
-/* int main()
-{
-    std::signal(SIGINT, signal_handler);
-    std::signal(SIGTERM, signal_handler);
-
-    try
-    {
-        // Creamos el config manualmente sin parsear archivo
-        ServerConfig config;
-        config.port = 8080;
-        config.serverName = "localhost";
-
-        std::vector<ServerConfig> servers;
-        servers.push_back(config);
-
-        Server server(servers);
-        server.run(g_running);
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "Fatal: " << e.what() << std::endl;
-        return 1;
-    }
-
-    return 0;
-} */
-
 int main(int ac, char **av)
 
 {
@@ -76,27 +49,17 @@ int main(int ac, char **av)
         std::signal(SIGINT, signal_handler);
         std::signal(SIGTERM, signal_handler);
 
-        // crear un if con el resultado booleano de la función
-        config.parseConfigFile(av[1], servers);
+        if (config.parseConfigFile(av[1], servers))
+        {
+            return (1);
+        }
         if (servers.empty())
         {
             std::cerr << "Error: no servers configured" << std::endl;
             return (1);
         }
-        //servers.push_back(config);
         Server server(servers);
         server.run(g_running);
-        
-        /* Client client;
-        unsigned long i = 0;
-        while (i < servers.size())
-        {
-            input.parseRequest(client.getBuffer(), servers[i]);
-            route.handleRequest(input, servers[0]);
-            Response response = method.executeMethod(input, route);
-            i++;
-        }
-        return (0); */
     }
     catch (const std::exception& e)
     {

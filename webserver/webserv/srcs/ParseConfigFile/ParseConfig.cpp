@@ -6,23 +6,21 @@
 /*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 11:42:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/29 14:16:02 by mnjie-me         ###   ########.fr       */
+/*   Updated: 2026/05/29 16:15:09 by mnjie-me         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ServerConfig.hpp"
 #include "LocationConfig.hpp"
 
-//hacer función boolean
-
-void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
+bool ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
 {
     std::ifstream   file(av);
 
     if (!file.is_open())
     {
         std::cerr << "Error: could not open file" << std::endl;
-        return ;
+        return (false);
     }
     std::string line;
     while (getline(file, line))
@@ -36,11 +34,11 @@ void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
             if (trimmed.find('{') == std::string::npos && !expectOpenBrace(file))
             {
                 std::cerr << "Error: server block not opened" << std::endl;
-                return ;
+                return (false);
             }
             ServerConfig config;
             if (!parseServer(config, file))
-                return ;
+                return (false);
             servers.push_back(config);
         }
         else if (trimmed == "}" || trimmed == "};")
@@ -48,7 +46,7 @@ void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
         else
         {
             std::cerr << "Error: unexpected token " << trimmed << std::endl;
-            return ;
+            return (false);
         }
     }
     size_t i = 0;
@@ -60,10 +58,10 @@ void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
             if (servers[i].port == servers[j].port && 
                 servers[i].serverName == servers[j].serverName)
             {
-                std::cerr << "Error: duplicate port and server_name" << std::endl;
                 servers.clear();
                 file.close();
-                return;
+                std::cerr << "Error: duplicate port and server_name" << std::endl;
+                return (false);
             }
             j++;
         }
@@ -73,8 +71,9 @@ void ServerConfig::parseConfigFile(char *av, std::vector<ServerConfig>& servers)
     if (servers.empty())
     {
         std::cerr << "Error: no server configured" << std::endl;
-        return ;
+        return (false);
     }
+    return (true);
 }
 
 bool ServerConfig::parseServer(ServerConfig& config, std::ifstream& file)

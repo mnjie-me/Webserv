@@ -3,14 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
+/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 14:20:58 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/29 16:17:51 by mnjie-me         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Router.hpp"
+
+Router::Router() : builtPath(""), CGI(false), redirect(false), cgiPath(""), cgiQuery (""), cgiPass("") {}
+
+Router::Router(const Router& other)
+{
+    *this = other;
+}
+
+Router& Router::operator=(const Router& other)
+{
+    if (this != &other)
+    {
+        this->builtPath = other.builtPath;
+        this->CGI = other.CGI;
+        this->redirect = other.redirect;
+        this->redirectUrl = other.redirectUrl;
+        this->cgiPath = other.cgiPath;
+        this->cgiQuery = other.cgiQuery;
+        this->cgiPass = other.cgiPass;
+    }
+    return (*this);
+}
+
+Router::~Router() {}
 
 void Router::handleRequest(Request& request, const ServerConfig& config)
 {

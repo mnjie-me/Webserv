@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
+/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/05 21:35:29 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/13 13:34:31 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/29 16:11:49 by mnjie-me         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class ServerConfig
         ServerConfig& operator=(const ServerConfig& other);
         ~ServerConfig();
 
-        void parseConfigFile(char *av, std::vector<ServerConfig>& servers);
+        bool parseConfigFile(char *av, std::vector<ServerConfig>& servers);
         bool parseServer(ServerConfig& config, std::ifstream& file);
         const LocationConfig* findLocation(const std::string& path, std::string& matchedPath) const;
 };
