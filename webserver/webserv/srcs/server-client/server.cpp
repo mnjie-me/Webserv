@@ -55,8 +55,9 @@ void Server::run(bool& run)
         int ret = poll(fds.data(), fds.size(), 1000);
 
         if (ret < 0)
-        continue;
-
+            continue;
+        if (ret == 0) 
+            continue;
         time_t now = time(NULL);
         std::vector<int> toRemove;
         std::vector<int> readyServerFds;
@@ -190,7 +191,6 @@ void Server::handleClient(int fd)
 
     ssize_t bytes = clients[fd].readData();
     std::cout << "[READ] fd=" << fd << " bytes=" << bytes << std::endl;
-
 
     if (bytes == 0)
     {
