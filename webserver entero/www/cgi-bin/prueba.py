@@ -1,4 +1,0 @@
-#!/usr/bin/env python3
-print('Content-Type: text/html')
-print()
-print('<h1>Hola CGI</h1>')
