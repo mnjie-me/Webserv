@@ -79,10 +79,10 @@ server {
 
     location /directory {
         methods GET POST;
-        root /path/to/YoupiBanane;
-        index youpi.bad_extension;
+        root /path/to/file;
+        index file.bad_extension;
         autoindex off;
-        cgi_pass .bla /path/to/cgi_tester;
+        cgi_pass .py /path/to/cgi_tester;
     }
 }
 ```
