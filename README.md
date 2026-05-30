@@ -108,5 +108,3 @@ AI tools were used during the development of this project in the following ways:
 - **Debugging**: resolving HTTP parsing edge cases and understanding 4xx/5xx status code behavior
 - **Configuration**: understanding NGINX-style config structure and virtual hosting
 - **Documentation**: clarifying HTTP/1.1 spec details from RFC 7230 where the standard was ambiguous
-
-AI was used as a support tool to resolve doubts, not to generate core project logic.
