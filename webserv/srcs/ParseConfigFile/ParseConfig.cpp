@@ -297,6 +297,9 @@ bool LocationConfig::parseLocation(LocationConfig& config, std::ifstream& file)
             std::string value = trim(trimmed.substr(8));
             if (!value.empty() && value[value.size() - 1] == ';')
                 value.erase(value.size() - 1);
+            size_t space = value.find(' ');
+            if (space != std::string::npos)
+                value = value.substr(0, space);
             config.cgiPass = value;
         }
     }
