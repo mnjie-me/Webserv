@@ -23,7 +23,7 @@ Concepts learned and implemented:
 * Clone the repository
 
 ```bash
-git clone https://github.com/mnjie-me/Webserv.git
+git clone https://...
 ```
 
 ### Compilation
