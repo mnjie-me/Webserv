@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/29 14:16:44 by mnjie-me          #+#    #+#             */
+/*   Updated: 2026/05/29 14:17:57 by mnjie-me         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "server.hpp"
 #include "Request.hpp"
 #include "ServerConfig.hpp"
@@ -12,17 +24,28 @@ Server::Server(std::vector<ServerConfig>& servers)
 {
     for(size_t i = 0; i < servers.size(); i++)
     {
-        int fd = Socket::create(servers[i].port);
-        Socket::setNonBlocking(fd);
-        serverMap[fd] = servers[i]; 
-
-        pollfd pfd;
-        pfd.fd = fd;
-        pfd.events = POLLIN;
-        pfd.revents = 0;
-        fds.push_back(pfd);
-
-        std::cout << "Listening on port " << servers[i].port << std::endl;
+        int port = servers[i].port;
+        int fd = -1;
+        for (std::map<int, std::vector<ServerConfig> >::iterator it = serverMap.begin(); it != serverMap.end(); ++it)
+        {
+            if (it->second[0].port == port)
+            {
+                fd = it->first;
+                break;
+            }
+        }
+        if (fd == -1)
+        {
+            fd = Socket::create(port);
+            Socket::setNonBlocking(fd);
+            pollfd pfd;
+            pfd.fd = fd;
+            pfd.events = POLLIN;
+            pfd.revents = 0;
+            fds.push_back(pfd);
+            std::cout << "Listening on port " << port << std::endl;
+        }
+        serverMap[fd].push_back(servers[i]);
     }
 }
 
@@ -135,10 +158,10 @@ void Server::run(bool& run)
 void Server::acceptNewClient(int serverFd)
 {
     int client_fd = accept(serverFd, NULL, NULL);
-    if (client_fd < 0)
-        return;
+    if (client_fd < 0) return;
 
     Socket::setNonBlocking(client_fd);
+    ServerConfig& config = serverMap[serverFd][0];
 
     pollfd pfd;
     pfd.fd = client_fd;
@@ -146,8 +169,7 @@ void Server::acceptNewClient(int serverFd)
     pfd.revents = 0;
     fds.push_back(pfd);
 
-    clients[client_fd] = Client(client_fd, serverMap[serverFd]);
-
+    clients[client_fd] = Client(client_fd, config);
     std::cout << "New client connected: " << client_fd << std::endl;
 }
 
@@ -250,7 +272,7 @@ void Server::shutdown()
     }
     clients.clear();
 
-    for (std::map<int, ServerConfig>::iterator it = serverMap.begin(); it != serverMap.end(); ++it)
+    for (std::map<int, std::vector<ServerConfig> >::iterator it = serverMap.begin(); it != serverMap.end(); ++it)
     {
         Socket::close(it->first);
     }

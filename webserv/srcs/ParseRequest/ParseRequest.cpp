@@ -3,15 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   ParseRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
+/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:22:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 13:59:17 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/29 16:16:17 by mnjie-me         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 #include "ServerConfig.hpp"
+
+Request::Request() : errorCode(0), isValid(true) {}
+
+Request::Request(const Request& other)
+{
+    *this = other;
+}
+
+Request& Request::operator=(const Request& other)
+{
+    if (this != &other)
+    {
+        method = other.method;
+        path = other.path;
+        version = other.version;
+        headers = other.headers;
+        body = other.body;
+        errorCode = other.errorCode;
+        isValid = other.isValid;
+    }
+    return (*this);
+}
+
+Request::~Request() {}
 
 void Request::parseRequest(const std::string& raw, const ServerConfig& config)
 {
@@ -28,7 +52,6 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
     while (start + 1 < raw.size() && raw[start] == '\r' && raw[start + 1] == '\n')
         start += 2;
 
-    // Extraer method
     pos1 = raw.find(' ', start);
     if (pos1 == std::string::npos)
     {
@@ -37,7 +60,6 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
     }
     method = raw.substr(start, pos1 - start);
 
-    // Extraer path
     pos2 = raw.find(' ', pos1 + 1);
     if (pos2 == std::string::npos)
     {
@@ -47,7 +69,6 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
     path = raw.substr(pos1 + 1, pos2 - (pos1 + 1));
     std::cout << path << std::endl;
 
-    // Fin de la request line (primera linea solamente)
     pos3 = raw.find("\r\n", pos2 + 1);
     size_t lineStep = 2;
     if (pos3 == std::string::npos)
@@ -61,19 +82,16 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
         return;
     }
 
-    // Verificar que no hay espacios extra en la request line
     if (raw.find(' ', pos2 + 1) < pos3)
     {
         setError(400);
         return;
     }
 
-    // Extraer version (solo hasta el fin de la primera linea)
     version = raw.substr(pos2 + 1, pos3 - (pos2 + 1));
     if (!version.empty() && version[version.size() - 1] == '\r')
         version.erase(version.size() - 1);
 
-    // Fin de los headers (doble salto de linea)
     size_t headersEnd = raw.find("\r\n\r\n");
     size_t bodyOffset = 4;
     if (headersEnd == std::string::npos)
@@ -87,7 +105,6 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
         return;
     }
 
-    // Parsear headers
     size_t startLine = pos3 + lineStep;
     while (startLine < headersEnd)
     {
@@ -131,7 +148,6 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
         startLine = end + step;
     }
 
-    // Extraer body
     if (raw.size() >= bodyOffset && headersEnd <= raw.size() - bodyOffset)
         body = raw.substr(headersEnd + bodyOffset);
     else
