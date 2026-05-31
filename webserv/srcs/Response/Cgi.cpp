@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/21 12:25:10 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 20:39:29 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/31 12:18:00 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,16 @@
 Response Method::handleCGI(const Request& request, const Router& router)
 {
     Response response;
+
+    struct stat info;
+    if (stat(router.getCgiPath().c_str(), &info) != 0)
+    {
+        response.setStatusCode(404);
+        response.setBody(defaultErrorPage(404));
+        response.setHeader("Content-Type", "text/html");
+        return response;
+    }
+
     int fd[2];
     int stdinFd[2];
 
@@ -43,20 +53,25 @@ Response Method::handleCGI(const Request& request, const Router& router)
 
         std::vector<std::string> env;
         env.push_back("REQUEST_METHOD=" + request.getMethod());
-        env.push_back("SCRIPT_FILENAME=" + router.getCgiPath()); 
+        env.push_back("SCRIPT_FILENAME=" + router.getCgiPath());
         env.push_back("SERVER_PROTOCOL=HTTP/1.1");
         env.push_back("QUERY_STRING=" + router.getQuery());
         env.push_back("REDIRECT_STATUS=200");
-        env.push_back("CONTENT_TYPE=application/x-www-form-urlencoded");
+
+        std::map<std::string, std::string> hdrs = request.getHeaders();
+        if (hdrs.count("Content-Type"))
+            env.push_back("CONTENT_TYPE=" + hdrs.at("Content-Type"));
+        else
+            env.push_back("CONTENT_TYPE=application/x-www-form-urlencoded");
+
         if (!request.getBody().empty())
         {
             std::stringstream ss;
             ss << request.getBody().size();
             env.push_back("CONTENT_LENGTH=" + ss.str());
-        }        
+        }
         else
             env.push_back("CONTENT_LENGTH=0");
-
         char** envp = vecToCharArray(env);
         std::string script = router.getCgiPath();
         std::string interpreter = getInterpreter(router);

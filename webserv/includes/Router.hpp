@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:15:27 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/04 14:19:59 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/30 15:07:23 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Router
     
         bool handleRedirect(Request& request, const LocationConfig& loc);
         bool validateMethod(Request& request, const LocationConfig& loc);
-        std::string buildPath(Request& request, const LocationConfig& loc, std::string matchedPath);
+        std::string buildPath(const std::string& cleanPath, const LocationConfig& loc, std::string matchedPath);
         bool isCGI(const std::string& path, const LocationConfig& loc);
 
         

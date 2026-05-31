@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 14:04:53 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/29 16:17:51 by mnjie-me         ###   ########.fr       */
+/*   Updated: 2026/05/31 12:38:50 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,15 @@ Router::~Router() {}
 void Router::handleRequest(Request& request, const ServerConfig& config)
 {
     errorPages = config.errorPages;
+    std::string cleanPath = request.getPath();
+    size_t qpos = cleanPath.find('?');
+    if (qpos != std::string::npos)
+    {
+        cgiQuery = cleanPath.substr(qpos + 1);
+        cleanPath = cleanPath.substr(0, qpos);
+    }
     std::string matchedPath;
-    const LocationConfig* loc = config.findLocation(request.getPath(), matchedPath);
+    const LocationConfig* loc = config.findLocation(cleanPath, matchedPath);
     std::map<int, std::string>::const_iterator it;
 
     if (request.getError() != 0)
@@ -55,7 +62,7 @@ void Router::handleRequest(Request& request, const ServerConfig& config)
         return ;
     if (!validateMethod(request, *loc))
         return ;
-    builtPath = buildPath(request, *loc, matchedPath);
+    builtPath = buildPath(cleanPath, *loc, matchedPath);
     indexFile = loc->index;
     autoindex = loc->autoindex;
     uploadStore =  loc->uploadStore;
@@ -116,9 +123,9 @@ bool Router::validateMethod(Request& request, const LocationConfig& loc)
     return (false);
 }
 
-std::string Router::buildPath(Request& request, const LocationConfig& loc, std::string matchedPath)
+std::string Router::buildPath(const std::string& cleanPath, const LocationConfig& loc, std::string matchedPath)
 {    
-    std::string value = request.getPath().substr(matchedPath.size());
+    std::string value = cleanPath.substr(matchedPath.size());
     if (value.empty() || value[0] != '/')
         value = "/" + value;
     std::string fullPath = loc.root + value;

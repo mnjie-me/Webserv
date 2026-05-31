@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ParseRequest.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mnjie-me <mnjie-me@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 13:22:09 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/05/29 16:16:17 by mnjie-me         ###   ########.fr       */
+/*   Updated: 2026/05/31 11:37:32 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,6 @@ void Request::parseRequest(const std::string& raw, const ServerConfig& config)
     size_t pos2;
     size_t pos3;
 
-    if (raw.size() > MAX_REQUEST_SIZE)
-    {
-        setError(413);
-        return;
-    }
     size_t start = 0;
     while (start + 1 < raw.size() && raw[start] == '\r' && raw[start + 1] == '\n')
         start += 2;

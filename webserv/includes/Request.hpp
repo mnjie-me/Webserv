@@ -6,7 +6,7 @@
 /*   By: mari-cruz <mari-cruz@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/30 20:14:07 by mari-cruz         #+#    #+#             */
-/*   Updated: 2026/04/12 18:13:06 by mari-cruz        ###   ########.fr       */
+/*   Updated: 2026/05/31 11:37:25 by mari-cruz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@ class ServerConfig;
 class Request
 {
     private:
-
-        static const size_t                 MAX_REQUEST_SIZE = 8192;
 
         int                                 errorCode;
         bool                                isValid;
